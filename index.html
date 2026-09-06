@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Kaya Robinson | Data Scientist</title>
+		<style>
+			:root {
+				color-scheme: light;
+				--ink: #17202a;
+				--muted: #5d6b78;
+				--accent: #176b87;
+				--accent-light: #e6f3f6;
+				--surface: #ffffff;
+				--background: #f5f7f8;
+			}
+
+			* {
+				box-sizing: border-box;
+			}
+
+			body {
+				margin: 0;
+				color: var(--ink);
+				background: var(--background);
+				font-family: Arial, Helvetica, sans-serif;
+				line-height: 1.6;
+			}
+
+			header {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 2rem;
+				max-width: 1100px;
+				margin: 0 auto;
+				padding: 1.25rem 2rem;
+			}
+
+			.logo {
+				color: var(--accent);
+				font-size: 1.25rem;
+				font-weight: bold;
+				text-decoration: none;
+			}
+
+			nav ul {
+				display: flex;
+				gap: 1.5rem;
+				margin: 0;
+				padding: 0;
+				list-style: none;
+			}
+
+			nav a {
+				color: var(--ink);
+				text-decoration: none;
+			}
+
+			nav a:hover,
+			nav a:focus {
+				color: var(--accent);
+			}
+
+			main {
+				max-width: 1100px;
+				margin: 0 auto;
+				padding: 0 2rem 4rem;
+			}
+
+			.hero {
+				display: grid;
+				min-height: 55vh;
+				place-items: center start;
+				padding: 5rem 0;
+			}
+
+			.hero-content {
+				max-width: 700px;
+			}
+
+			.eyebrow {
+				margin: 0 0 0.75rem;
+				color: var(--accent);
+				font-family: Arial, sans-serif;
+				font-size: 0.8rem;
+				font-weight: bold;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+			}
+
+			h1,
+			h2 {
+				margin-top: 0;
+				line-height: 1.1;
+			}
+
+			h1 {
+				max-width: 650px;
+				margin-bottom: 1.25rem;
+				font-size: clamp(2.75rem, 8vw, 5.5rem);
+				font-weight: normal;
+			}
+
+			.hero p {
+				max-width: 580px;
+				margin: 0;
+				color: var(--muted);
+				font-size: 1.2rem;
+			}
+
+			.hero-meta {
+			margin-top: 1.5rem !important;
+			color: var(--accent) !important;
+			font-family: Arial, sans-serif;
+			font-size: 0.9rem !important;
+			font-weight: bold;
+			letter-spacing: 0.04em;
+			text-transform: uppercase;
+		}
+
+			section {
+				padding: 4rem 0;
+				border-top: 1px solid #d9e0e3;
+			}
+
+			section h2 {
+				font-size: 2.25rem;
+				font-weight: normal;
+			}
+
+			.about-copy {
+				max-width: 700px;
+				color: var(--muted);
+				font-size: 1.1rem;
+			}
+
+			.section-intro {
+				max-width: 850px;
+				color: var(--muted);
+			}
+
+			.tag-list {
+			display: flex;
+				flex-wrap: wrap;
+				gap: 0.6rem;
+				margin: 1.5rem 0 0;
+				padding: 0;
+				list-style: none;
+			}
+
+			.tag-list li {
+				padding: 0.45rem 0.75rem;
+				color: var(--accent);
+				background: var(--accent-light);
+				font-size: 0.9rem;
+				font-weight: bold;
+			}
+
+			.experience-list,
+			.project-list {
+			display: grid;
+			gap: 1.5rem;
+			margin: 0;
+			padding: 0;
+			list-style: none;
+			}
+
+			.experience-item,
+			.project-item {
+				padding: 1.5rem;
+				background: var(--surface);
+				border-left: 4px solid var(--accent);
+			}
+
+			.item-heading {
+				display: flex;
+				align-items: baseline;
+				justify-content: space-between;
+				gap: 1rem;
+				margin-bottom: 0.25rem;
+			}
+
+			.item-heading h3 {
+				margin: 0;
+				font-size: 1.2rem;
+			}
+
+			.item-heading span,
+			.item-company,
+			.project-stack,
+			.education-meta {
+				color: var(--muted);
+				font-size: 0.9rem;
+			}
+
+			.item-company {
+				margin: 0 0 0.75rem;
+				font-weight: bold;
+			}
+
+			.item-details {
+				margin: 0;
+				padding-left: 1.2rem;
+				color: var(--muted);
+			}
+
+			.item-details li + li {
+				margin-top: 0.5rem;
+			}
+
+			.project-item h3 {
+				margin: 0 0 0.35rem;
+			}
+
+			.project-item p {
+				margin: 0.75rem 0 0;
+				color: var(--muted);
+			}
+
+			.education-list {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+				gap: 1rem;
+				margin: 0;
+				padding: 0;
+				list-style: none;
+			}
+
+			.education-list li {
+				padding: 1.25rem;
+				background: var(--surface);
+			}
+
+			.education-list h3 {
+				margin: 0 0 0.4rem;
+				font-size: 1.1rem;
+			}
+
+			footer {
+				max-width: 1100px;
+				margin: 0 auto;
+				padding: 2rem;
+				border-top: 1px solid #d9e0e3;
+				color: var(--muted);
+				font-size: 0.9rem;
+			}
+
+			.skills-list {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+				gap: 1rem;
+				margin: 0;
+				padding: 0;
+				list-style: none;
+			}
+
+			.skills-list li {
+				padding: 1.25rem;
+				background: var(--surface);
+				border-left: 4px solid var(--accent);
+			}
+
+			.skills-list strong {
+				display: block;
+				margin-bottom: 0.25rem;
+			}
+
+			.skills-list span {
+				color: var(--muted);
+				font-family: Arial, sans-serif;
+				font-size: 0.9rem;
+			}
+
+			@media (max-width: 600px) {
+				header {
+					align-items: flex-start;
+					flex-direction: column;
+					gap: 0.75rem;
+					padding: 1rem 1.25rem;
+				}
+
+				nav ul {
+					flex-wrap: wrap;
+					gap: 0.75rem 1rem;
+				}
+
+				main {
+					padding: 0 1.25rem 2rem;
+				}
+
+				.hero {
+					min-height: 60vh;
+					padding: 3rem 0;
+				}
+
+				section {
+					padding: 3rem 0;
+				}
+
+				.item-heading {
+					align-items: flex-start;
+					flex-direction: column;
+					gap: 0.15rem;
+				}
+
+				footer {
+					padding: 2rem 1.25rem;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<a class="logo" href="#top">Kaya Robinson</a>
+			<nav aria-label="Main navigation">
+				<ul>
+					<li><a href="#about">Profile</a></li>
+					<li><a href="#skills">Skills</a></li>
+					<li><a href="#experience">Experience</a></li>
+					<li><a href="#projects">Projects</a></li>
+					<li><a href="#education">Education</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="top">
+			<section class="hero" aria-labelledby="hero-title">
+				<div class="hero-content">
+					<p class="eyebrow">Enterprise technology | AI/ML | Software engineering</p>
+					<h1 id="hero-title">Building secure, useful technology from complex systems.</h1>
+					<p>
+						I am Kaya Robinson, a Chicago-based enterprise technology professional
+						focused on software development, AI/ML, FinTech, and cloud technology.
+					</p>
+					<p class="hero-meta">Chicago, IL | Phone | Email</p>
+				</div>
+			</section>
+
+			<section id="about" aria-labelledby="about-title">
+				<h2 id="about-title">Professional Profile</h2>
+				<p class="about-copy">
+					Enterprise technology professional with 8+ years of corporate experience
+					across regulated financial services, technical platform support, business
+					development, and client relationship management. Experienced in Tier-2
+					troubleshooting, log analysis, incident triage, authentication issue
+					resolution, defect documentation, and cross-functional escalation.
+				</p>
+				<p class="section-intro">
+					Currently pursuing a Bachelor of Science in Software Development at
+					DeVry University and completing TripleTen's AI &amp; Machine Learning
+					program. Targeting remote internal engineering roles across software
+					development, AI/ML, FinTech, cloud, infrastructure, and secure technology.
+				</p>
+			</section>
+
+			<section id="skills" aria-labelledby="skills-title">
+				<h2 id="skills-title">Core Technical Skills</h2>
+				<ul class="tag-list">
+					<li>Python</li><li>SQL</li><li>JavaScript</li><li>HTML5/CSS3</li>
+					<li>Object-Oriented Programming</li><li>REST APIs</li><li>Git/GitHub</li>
+					<li>Pandas</li><li>NumPy</li><li>scikit-learn</li><li>AWS</li>
+					<li>IAM</li><li>Lambda</li><li>S3</li><li>Cloud Fundamentals</li>
+					<li>Secure Development</li><li>Network Security</li><li>Log Analysis</li>
+					<li>Incident Triage</li><li>API Authentication Troubleshooting</li>
+					<li>ServiceNow</li><li>Jira</li><li>Salesforce</li><li>Agile/Scrum</li>
+					<li>SDLC</li><li>FINRA/SEC Compliance</li><li>Risk Management</li>
+				</ul>
+			</section>
+
+			<section id="experience" aria-labelledby="experience-title">
+				<h2 id="experience-title">Professional Experience</h2>
+				<ul class="experience-list">
+					<li class="experience-item">
+						<div class="item-heading"><h3>Client Relationship Manager II - Technical Support Specialty</h3><span>Nov 2024 - May 2026</span></div>
+						<p class="item-company">E*TRADE from Morgan Stanley | Chicago, IL</p>
+						<ul class="item-details">
+							<li>Diagnosed and resolved Tier-2 technical issues affecting enterprise brokerage and trading platforms, including authentication failures, transaction exceptions, account-access issues, and platform defects.</li>
+							<li>Performed log analysis and incident triage; documented reproducible defects and translated system behavior into actionable escalation details.</li>
+							<li>Collaborated across engineering, infrastructure, cybersecurity, operations, and business functions to support platform reliability.</li>
+							<li>Evaluated account configurations and sensitive data-access requests in alignment with FINRA, SEC, privacy, and internal governance requirements.</li>
+						</ul>
+					</li>
+					<li class="experience-item">
+						<div class="item-heading"><h3>Client Relationship Manager I</h3><span>May 2023 - Nov 2024</span></div>
+						<p class="item-company">E*TRADE from Morgan Stanley | Chicago, IL</p>
+						<ul class="item-details"><li>Managed complex relationships across digital brokerage platforms while resolving account, workflow, and platform issues in a highly regulated environment.</li><li>Identified recurring system-utilization trends and operational gaps and escalated improvement opportunities to technical and product stakeholders.</li></ul>
+					</li>
+					<li class="experience-item">
+						<div class="item-heading"><h3>Financial Service Representative</h3><span>Feb 2023 - Apr 2023</span></div>
+						<p class="item-company">E*TRADE from Morgan Stanley | Chicago, IL</p>
+						<ul class="item-details"><li>Developed foundational expertise in brokerage operations, enterprise financial systems, and regulatory procedures through accelerated training and production support.</li></ul>
+					</li>
+					<li class="experience-item">
+						<div class="item-heading"><h3>Business Development Manager</h3><span>Oct 2018 - Feb 2022</span></div>
+						<p class="item-company">Guaranteed Rate | Chicago, IL</p>
+						<ul class="item-details"><li>Executed B2B regional development strategy across real-estate and lending referral networks using CRM data, market analysis, and operational coordination.</li><li>Used analytics dashboards and enterprise lending platforms to monitor pipelines, support forecasting, and align front-line production with internal operations.</li><li>Translated complex lending workflows and technology-enabled processes into clear guidance for business stakeholders.</li></ul>
+					</li>
+					<li class="experience-item">
+						<div class="item-heading"><h3>Associate Account Executive</h3><span>Oct 2017 - May 2018</span></div>
+						<p class="item-company">Yelp | Chicago, IL</p>
+						<ul class="item-details"><li>Built consultative account-management experience in a KPI-driven technology environment, strengthening executive communication, data-informed recommendations, and performance accountability.</li></ul>
+					</li>
+				</ul>
+			</section>
+
+			<section id="projects" aria-labelledby="projects-title">
+				<h2 id="projects-title">Selected Technical Projects</h2>
+				<ul class="project-list">
+					<li class="project-item"><h3>Secure FinTech REST API &amp; Ledger Automator</h3><span class="project-stack">Python | SQL | Git</span><p>Object-oriented financial ledger project incorporating input validation, structured exception handling, audit-oriented logging, SQL-backed data concepts, and secure-development principles.</p></li>
+					<li class="project-item"><h3>Cloud-Native Serverless Deployment Portfolio</h3><span class="project-stack">AWS IAM | Lambda | S3</span><p>Cloud portfolio work applying least-privilege IAM concepts, serverless services, secure resource access, and deployment fundamentals.</p></li>
+					<li class="project-item"><h3>Graph Algorithms / Minimum Spanning Tree</h3><span class="project-stack">Python | NetworkX | Matplotlib</span><p>Implemented and visualized Prim's and Kruskal's minimum-spanning-tree algorithms in Python through DeVry coursework.</p></li>
+					<li class="project-item"><h3>AI &amp; Machine Learning Portfolio</h3><span class="project-stack">Python | Pandas | NumPy | scikit-learn</span><p>Developing applied ML projects through TripleTen focused on data preparation, model development, evaluation, automation, and reproducible analysis.</p></li>
+				</ul>
+			</section>
+
+			<section id="education" aria-labelledby="education-title">
+				<h2 id="education-title">Education &amp; Professional Development</h2>
+				<ul class="education-list">
+					<li><h3>DeVry University</h3><p>Bachelor of Science in Software Development</p><span class="education-meta">Concentration: Software Design &amp; Engineering | Expected 2028</span></li>
+					<li><h3>TripleTen</h3><p>AI &amp; Machine Learning Program</p><span class="education-meta">Expected March 2027</span></li>
+					<li><h3>Professional Development</h3><p>CompTIA Security+ studies | AWS certification studies | Python certification studies</p></li>
+				</ul>
+			</section>
+		</main>
+
+		<footer>
+			Kaya Robinson | <a href="https://linkedin.com/in/kayarobinson-ai">LinkedIn</a> | <a href="https://github.com/rithmsAI">GitHub</a>
+		</footer>
+	</body>
+</html>
