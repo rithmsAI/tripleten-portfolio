@@ -1,0 +1,9 @@
+Executed 2026-10-29.
+
+Python 3.14 runtime: 10 unittest API tests passed (0.769 seconds).
+FastAPI 0.143.3; uvicorn 0.54.0; httpx 0.28.1.
+JavaScript: 11 assertions passed using Node, no packages required.
+
+Browser: investigator assignment, saved hypothesis, ERROR filter (1/4 logs), required transition rationale, investigating -> mitigated -> resolved, blocked resolution until all checks complete, 8 recorded actions, read-only resolved case, resolved state preserved after reload, exported INC-1042-incident-report.txt.
+
+No production load, authentication, multi-user collaboration or cloud API deployment is claimed. Browser reset and light/mobile appearance are checked separately during visual review. Initial restricted-run API tests were blocked by temporary-directory/local test-client permissions; rerun with local test access passed all 10 tests. No fixture or assertion was weakened to make the rerun pass.

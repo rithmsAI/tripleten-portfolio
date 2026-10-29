@@ -1,0 +1,15 @@
+const assert=require('node:assert/strict');
+const {filteredLogs,canTransition,reportText}=require('./workbench.js');
+const sample={id:'INC-TEST',title:'Fixture',status:'open',service:'Identity',severity:'SEV2',owner:'Demo',impact:'Fictional',hypothesis:'Stale key',checks:[false,false,false],steps:['A','B','C'],logs:[{at:'14:00',level:'ERROR',message:'Keyset k17 mismatch'},{at:'14:01',level:'INFO',message:'Recovery'}],audit:[{seq:1,at:'UTC',action:'note',detail:'Observed mismatch'}]};
+assert.equal(filteredLogs(sample,'ERROR','KEYSET').length,1);
+assert.equal(filteredLogs(sample,'INFO','keyset').length,0);
+assert.equal(filteredLogs(sample,'ALL','').length,2);
+assert.ok(canTransition(sample,'resolved','A sufficiently long rationale'));
+assert.ok(canTransition(sample,'investigating','short'));
+assert.equal(canTransition(sample,'investigating','Inspecting the sample evidence.'),'');
+assert.ok(canTransition({...sample,status:'mitigated'},'resolved','Verified all fictional probes.'));
+assert.equal(canTransition({...sample,status:'mitigated',checks:[true,true,true]},'resolved','Verified all fictional probes.'),'');
+assert.match(reportText(sample),/\[ \] A/);
+assert.match(reportText(sample),/Observed mismatch/);
+assert.match(reportText(sample),/not a tamper-proof/);
+console.log('PASS: 11 frontend assertions covering filtering, ordered transitions, verification and report content.');

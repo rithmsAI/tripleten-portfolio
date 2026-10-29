@@ -1,0 +1,25 @@
+name: Incident workbench
+on:
+  push:
+    paths: ['projects/incidents/**', '.github/workflows/incident-workbench.yml']
+  pull_request:
+    paths: ['projects/incidents/**', '.github/workflows/incident-workbench.yml']
+permissions:
+  contents: read
+jobs:
+  workflow-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: projects/incidents
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: python -m pip install -r requirements.txt
+      - run: python -m unittest discover -s . -p 'test_workbench.py' -v
+      - run: node test_frontend.cjs
