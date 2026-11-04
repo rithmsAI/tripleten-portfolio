@@ -1,13 +1,13 @@
 # Validation record — November 4, 2026
 
 - Node 24.22.1: 20 automated engine/validation tests passed.
-- TypeScript strict type checking passed.
-- Vite production bundle built successfully.
-- CLI generated `example-report.json`; shared engine reproduces 7/12 baseline passes, 10/12 candidate passes, 5 improvements, 2 regressions and 1 critical regression.
-- Browser preview: initial dashboard rendered correctly at desktop width; default release gate blocked the critical regression.
-- Browser preview: disabling critical-regression gate changed the decision to criteria met; resetting thresholds restored hold.
-- Browser preview: regression filter and search reduced visible rows while gate calculations retained the full 12 cases.
-- Browser preview: selecting TB-009 showed its invalid S404 citation; a human note was editable.
-- HTTP preview correctly reported the secure-context requirement for Web Crypto export. HTTPS-hosted export needs separate verification.
+- TypeScript strict type checking and Vite production build passed.
+- CLI generated example-report.json: 7/12 baseline passes, 10/12 candidate passes, 5 improvements, 2 regressions, 1 critical regression.
+- Desktop browser: dashboard rendered; critical-regression toggle and reset changed the release decision as expected.
+- Browser: regression filter and search changed visible rows without changing the full-dataset gate calculation.
+- Browser: selecting TB-009 exposed its invalid S404 citation; human notes were editable.
+- Public HTTPS demo rendered successfully. Export reported successful generation with inputs, checks, gates, notes and SHA-256 fingerprint.
+- GitHub TraceBench checks passed: https://github.com/rithmsAI/tripleten-portfolio/actions/runs/41878156981
+- GitHub Pages deployment succeeded: https://github.com/rithmsAI/tripleten-portfolio/actions/runs/41878156291
 
-Not claimed: audited WCAG conformance, complete end-to-end automation, mobile device testing, production performance, real-model benchmark validity or a security audit.
+Verification limits: the browser file-picker test stalled and was not completed. Import validation passed automated tests, but the file-picker interaction is not verified. Downloaded report bytes were not independently inspected in the browser test; the CLI report and hash generation were verified locally. No audited WCAG conformance, mobile-device testing, production performance, real-model benchmark validity or security audit is claimed.
