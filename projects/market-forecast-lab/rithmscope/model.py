@@ -127,6 +127,8 @@ def metrics(frame, cfg):
 def evaluate(bars, cfg):
     table = supervised(bars)
     all_rows, boundaries = [], []
+    initial_train = table.iloc[next(splits(len(table), cfg))[0]]
+    regime_cuts = initial_train.volatility_20.quantile([1/3, 2/3]).to_numpy()
     for fold, (tr, ca, te) in enumerate(splits(len(table), cfg), 1):
         train, calibration, test = table.iloc[tr], table.iloc[ca], table.iloc[te]
         boundaries.append({"fold": fold, "train_rows": len(train),
@@ -147,6 +149,8 @@ def evaluate(bars, cfg):
             result["model"], result["fold"] = name, fold
             result["predicted"] = predicted
             result["lower"], result["upper"] = predicted-width, predicted+width
+            result["volatility_regime"] = np.where(test.volatility_20 <= regime_cuts[0], "lower",
+                np.where(test.volatility_20 <= regime_cuts[1], "middle", "higher"))
             all_rows.append(result)
     predictions = pd.concat(all_rows, ignore_index=True)
     predictions["long_candidate"] = False
@@ -164,6 +168,8 @@ def evaluate(bars, cfg):
         predictions.loc[frame.index, "strategy_return"] = net
         predictions.loc[frame.index, "strategy_equity"] = np.cumprod(1+net)
     return {"config": asdict(cfg), "boundaries": boundaries, "metrics": totals,
+            "regime_thresholds": {"basis": "first fold training volatility_20 terciles, frozen across all folds",
+                                  "lower": float(regime_cuts[0]), "upper": float(regime_cuts[1])},
             "fold_metrics": folds}, predictions
 
 

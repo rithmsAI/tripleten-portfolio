@@ -105,6 +105,11 @@
       "always_long_intraday_net_return": -0.16006706095652556
     }
   },
+  "regime_thresholds": {
+    "basis": "first fold training volatility_20 terciles, frozen across all folds",
+    "lower": 0.024647219381262634,
+    "upper": 0.032974985728213224
+  },
   "fold_metrics": [
     {
       "model": "boosted_trees",

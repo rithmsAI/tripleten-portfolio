@@ -2,7 +2,7 @@
 
 Enterprise technology, applied machine learning and software engineering portfolio.
 
-- [RithmScope — Market Forecast Lab](projects/market-forecast-lab/): stock/ETF/crypto daily forecasting pipeline, chronological evaluation, uncertainty intervals, cost-aware simulations, and measured BTC/ETH baseline comparisons. Research results show no demonstrated predictive edge.
+- [RithmScope — Market Forecast Lab](projects/market-forecast-lab/): interactive stock/ETF/crypto research dashboard, chronological evaluation, uncertainty exploration, cost-sensitive simulations, and measured AMD/SPY/BTC/ETH baseline comparisons. [Live dashboard](https://rithmsai.github.io/tripleten-portfolio/projects/market-forecast-lab/). Research results show no demonstrated forecasting edge; 21 Python and 14 JavaScript tests.
 
 - [TraceBench — AI Evaluation Workbench](projects/tracebench/): React/TypeScript comparison dashboard, validated imports, paired regressions, configurable release gates, reproducible JSON reports and 20 automated tests. [Live demo](https://rithmsai.github.io/tripleten-portfolio/projects/tracebench/).
 - [Incident Response Workbench](projects/incidents/): fictional incident investigation UI, separate local FastAPI/SQLite implementation, 10 Python tests and 11 JavaScript assertions.

@@ -8,6 +8,7 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
+from zoneinfo import ZoneInfo
 
 import numpy as np
 import pandas as pd
@@ -121,10 +122,49 @@ def alphavantage(symbol, request=get_json):
     rows = []
     for day, bar in sorted(bars.items()):
         close = float(bar["4. close"])
+        if not np.isfinite(close) or close <= 0:
+            raise ValueError("Invalid provider closing price")
         factor = float(bar["5. adjusted close"]) / close
         # One factor for all four prices avoids mixing raw open with adjusted close.
         rows.append([day, float(bar["1. open"]) * factor, float(bar["2. high"]) * factor,
                      float(bar["3. low"]) * factor, close * factor, float(bar["6. volume"])])
+    return validate(pd.DataFrame(rows, columns=COLUMNS))
+
+
+def yahoo_snapshot(symbol, start, end, request=get_json):
+    """Experimental public chart snapshot; not a supported or guaranteed Yahoo API."""
+    if not re.fullmatch(r"[A-Z0-9.\-]{1,16}", symbol):
+        raise ValueError("Invalid stock/ETF symbol")
+    first, stop = date.fromisoformat(start), date.fromisoformat(end)
+    if not first < stop <= datetime.now(timezone.utc).date() or (stop-first).days > 7305:
+        raise ValueError("Use an exclusive end no later than today UTC; max 20 years")
+    stamp = lambda d: int(datetime.combine(d, datetime.min.time(), timezone.utc).timestamp())
+    query = urlencode({"period1": stamp(first), "period2": stamp(stop), "interval": "1d", "events": "div,splits"})
+    payload = request(f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?{query}")
+    results = payload.get("chart", {}).get("result") if isinstance(payload, dict) else None
+    if not results or len(results) != 1:
+        raise ValueError("Yahoo snapshot unavailable; use a licensed CSV or Alpha Vantage instead")
+    result = results[0]
+    if result.get("meta", {}).get("symbol") != symbol:
+        raise ValueError("Provider symbol mismatch")
+    zone = ZoneInfo(result["meta"]["exchangeTimezoneName"])
+    quotes = result["indicators"]["quote"][0]
+    adjusted = result["indicators"]["adjclose"][0]["adjclose"]
+    timestamps = result["timestamp"]
+    if any(len(quotes.get(c, [])) != len(timestamps) for c in COLUMNS[1:]) or len(adjusted) != len(timestamps):
+        raise ValueError("Mismatched Yahoo snapshot arrays")
+    rows = []
+    for i, timestamp in enumerate(timestamps):
+        day = datetime.fromtimestamp(timestamp, zone).date()
+        if first <= day < stop:
+            values = [quotes[c][i] for c in COLUMNS[1:]] + [adjusted[i]]
+            if any(v is None for v in values):
+                raise ValueError("Missing Yahoo candle value; no silent dropping")
+            close = float(quotes["close"][i])
+            if not np.isfinite(close) or close <= 0:
+                raise ValueError("Invalid provider closing price")
+            factor = float(adjusted[i]) / close
+            rows.append([day.isoformat(), *[float(quotes[c][i])*factor for c in COLUMNS[1:5]], quotes["volume"][i]])
     return validate(pd.DataFrame(rows, columns=COLUMNS))
 
 

@@ -1,0 +1,13 @@
+{
+  "provider": "Yahoo Finance public chart snapshot (experimental)",
+  "symbol": "SPY",
+  "source_url": "https://finance.yahoo.com/quote/SPY/history/",
+  "start_inclusive": "2023-01-01",
+  "end_exclusive": "2026-01-01",
+  "price_basis": "all OHLC scaled by adjusted_close/raw_close; provider volume; retrospective snapshot",
+  "retrieved_utc": "2026-11-05T21:22:14.326653+00:00",
+  "sha256": "672055521d8b165fa9c9f93556c32769587037b1f82456097949414b031aa818",
+  "rows": 752,
+  "first_date": "2023-01-03",
+  "last_date": "2025-12-31"
+}

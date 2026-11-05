@@ -8,8 +8,8 @@ import numpy as np
 import pandas as pd
 import sklearn
 
-from .data import alphavantage, coinbase, load, save_download
-from .model import Config, evaluate, forecast
+from .data import alphavantage, coinbase, load, save_download, yahoo_snapshot
+from .model import Config, evaluate, forecast, supervised
 from .report import render
 
 
@@ -17,7 +17,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description="RithmScope daily market forecasting research — no order execution")
     sub = parser.add_subparsers(dest="command", required=True)
     fetch = sub.add_parser("download", help="Read-only provider import")
-    fetch.add_argument("--provider", choices=["coinbase", "alphavantage"], required=True)
+    fetch.add_argument("--provider", choices=["coinbase", "alphavantage", "yahoo-snapshot"], required=True)
     fetch.add_argument("--symbol", required=True)
     fetch.add_argument("--start", default="2023-01-01")
     fetch.add_argument("--end", default="2026-01-01", help="Exclusive UTC end for Coinbase")
@@ -40,10 +40,16 @@ def main(argv=None):
                 metadata = {"provider": "Coinbase Exchange", "symbol": args.symbol,
                             "start_inclusive": args.start, "end_exclusive": args.end,
                             "price_basis": "venue trades, daily UTC"}
-            else:
+            elif args.provider == "alphavantage":
                 frame = alphavantage(args.symbol)
                 metadata = {"provider": "Alpha Vantage", "symbol": args.symbol,
                             "price_basis": "all OHLC adjusted by adjusted_close/raw_close; provider raw volume"}
+            else:
+                frame = yahoo_snapshot(args.symbol, args.start, args.end)
+                metadata = {"provider": "Yahoo Finance public chart snapshot (experimental)", "symbol": args.symbol,
+                            "source_url": f"https://finance.yahoo.com/quote/{args.symbol}/history/",
+                            "start_inclusive": args.start, "end_exclusive": args.end,
+                            "price_basis": "all OHLC scaled by adjusted_close/raw_close; provider volume; retrospective snapshot"}
             save_download(frame, args.output, metadata)
             print(f"Saved {len(frame)} daily bars to {args.output}")
             return 0
@@ -66,6 +72,9 @@ def main(argv=None):
             result = {**meta, **result}
             (out/"report.json").write_text(json.dumps(result, indent=2, allow_nan=False)+"\n", encoding="utf-8")
             predictions.to_csv(out/"predictions.csv", index=False, date_format="%Y-%m-%d", float_format="%.12g")
+            indicators = supervised(bars)
+            indicators = indicators[indicators.target_date.isin(predictions.target_date.unique())]
+            indicators.drop(columns="actual").to_csv(out/"indicators.csv", index=False, date_format="%Y-%m-%d", float_format="%.12g")
             (out/"report.html").write_text(render(result, predictions), encoding="utf-8")
             print(json.dumps(result["metrics"], indent=2))
         return 0

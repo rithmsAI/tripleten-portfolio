@@ -10,13 +10,38 @@ import pandas as pd
 from pandas.testing import assert_frame_equal
 
 from rithmscope.__main__ import main
-from rithmscope.data import COLUMNS, alphavantage, coinbase, load, validate
+from rithmscope.data import COLUMNS, alphavantage, coinbase, load, validate, yahoo_snapshot
 from rithmscope.model import Config, FEATURES, evaluate, features, forecast, metrics, radius, splits, supervised
 from rithmscope.report import render
 from rithmscope.demo_data import fixture
 
 
 class DataTests(unittest.TestCase):
+    def yahoo_payload(self):
+        days = pd.date_range("2023-01-01 14:30", periods=65, tz="UTC")
+        return {"chart": {"result": [{"meta": {"symbol": "SPY", "exchangeTimezoneName": "America/New_York"},
+            "timestamp": [int(d.timestamp()) for d in days], "indicators": {
+                "quote": [{"open": [100]*65, "high": [110]*65, "low": [90]*65, "close": [105]*65, "volume": [1000]*65}],
+                "adjclose": [{"adjclose": [52.5]*65}]}}]}}
+
+    def test_yahoo_snapshot_adjustment_and_exchange_dates(self):
+        frame = yahoo_snapshot("SPY", "2023-01-01", "2023-03-07", request=lambda _: self.yahoo_payload())
+        self.assertEqual(frame.open.iloc[0], 50)
+        self.assertEqual(frame.close.iloc[0], 52.5)
+        self.assertEqual(str(frame.date.iloc[0].date()), "2023-01-01")
+
+    def test_yahoo_snapshot_rejects_missing_values_and_symbol_mismatch(self):
+        p = self.yahoo_payload()
+        p["chart"]["result"][0]["indicators"]["quote"][0]["open"][0] = None
+        with self.assertRaisesRegex(ValueError, "Missing"):
+            yahoo_snapshot("SPY", "2023-01-01", "2023-03-07", request=lambda _: p)
+        with self.assertRaisesRegex(ValueError, "symbol mismatch"):
+            yahoo_snapshot("AMD", "2023-01-01", "2023-03-07", request=lambda _: self.yahoo_payload())
+        p = self.yahoo_payload()
+        p["chart"]["result"][0]["indicators"]["quote"][0]["close"][0] = 0
+        with self.assertRaisesRegex(ValueError, "closing price"):
+            yahoo_snapshot("SPY", "2023-01-01", "2023-03-07", request=lambda _: p)
+
     def test_reject_duplicate_or_unsorted_dates(self):
         for change in (lambda f: f.assign(date=f.date.iloc[0]), lambda f: f.iloc[::-1]):
             with self.assertRaises(ValueError): validate(change(fixture()))
@@ -95,6 +120,15 @@ class ResearchTests(unittest.TestCase):
             covered.extend(range(test.start, test.stop))
         self.assertEqual(len(covered), len(set(covered)))
         self.assertEqual(covered[-1], len(table)-1)
+
+    def test_volatility_thresholds_use_only_initial_training_history(self):
+        bars = fixture(320)
+        report, rows = evaluate(bars, self.cfg)
+        table = supervised(bars)
+        first_train = table.iloc[next(splits(len(table), self.cfg))[0]]
+        self.assertAlmostEqual(report["regime_thresholds"]["lower"], first_train.volatility_20.quantile(1/3))
+        self.assertAlmostEqual(report["regime_thresholds"]["upper"], first_train.volatility_20.quantile(2/3))
+        self.assertTrue(set(rows.volatility_regime) <= {"lower", "middle", "higher"})
 
     def test_future_fold_cannot_change_first_fold_predictions(self):
         bars = fixture(320)
