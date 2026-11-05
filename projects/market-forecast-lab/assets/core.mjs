@@ -32,7 +32,7 @@ export function simulate(rows,model,{fee=5,slippage=5,threshold=0,policy='interv
     winRate:trades?wins/trades:null,series};
 }
 export function validateBundle(bundle){
-  if(bundle?.schemaVersion!==1||!Array.isArray(bundle.assets)||!bundle.assets.length)throw Error('Unsupported research bundle');
+  if(bundle?.dataKind!=='synthetic'||bundle?.schemaVersion!==1||!Array.isArray(bundle.assets)||!bundle.assets.length)throw Error('Unsupported research bundle');
   for(const a of bundle.assets){
     if(!/^[A-Z0-9-]+$/.test(a.symbol)||!Array.isArray(a.sessions)||!a.sessions.length)throw Error('Invalid asset data');
     let prior='';

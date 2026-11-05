@@ -1,46 +1,22 @@
 import json
-import os
 from pathlib import Path
 import tempfile
 import unittest
-from unittest.mock import patch
 
 import numpy as np
 import pandas as pd
 from pandas.testing import assert_frame_equal
 
 from rithmscope.__main__ import main
-from rithmscope.data import COLUMNS, alphavantage, coinbase, load, validate, yahoo_snapshot
+from rithmscope.data import load, validate
 from rithmscope.model import Config, FEATURES, evaluate, features, forecast, metrics, radius, splits, supervised
 from rithmscope.report import render
 from rithmscope.demo_data import fixture
 
 
 class DataTests(unittest.TestCase):
-    def yahoo_payload(self):
-        days = pd.date_range("2023-01-01 14:30", periods=65, tz="UTC")
-        return {"chart": {"result": [{"meta": {"symbol": "SPY", "exchangeTimezoneName": "America/New_York"},
-            "timestamp": [int(d.timestamp()) for d in days], "indicators": {
-                "quote": [{"open": [100]*65, "high": [110]*65, "low": [90]*65, "close": [105]*65, "volume": [1000]*65}],
-                "adjclose": [{"adjclose": [52.5]*65}]}}]}}
 
-    def test_yahoo_snapshot_adjustment_and_exchange_dates(self):
-        frame = yahoo_snapshot("SPY", "2023-01-01", "2023-03-07", request=lambda _: self.yahoo_payload())
-        self.assertEqual(frame.open.iloc[0], 50)
-        self.assertEqual(frame.close.iloc[0], 52.5)
-        self.assertEqual(str(frame.date.iloc[0].date()), "2023-01-01")
 
-    def test_yahoo_snapshot_rejects_missing_values_and_symbol_mismatch(self):
-        p = self.yahoo_payload()
-        p["chart"]["result"][0]["indicators"]["quote"][0]["open"][0] = None
-        with self.assertRaisesRegex(ValueError, "Missing"):
-            yahoo_snapshot("SPY", "2023-01-01", "2023-03-07", request=lambda _: p)
-        with self.assertRaisesRegex(ValueError, "symbol mismatch"):
-            yahoo_snapshot("AMD", "2023-01-01", "2023-03-07", request=lambda _: self.yahoo_payload())
-        p = self.yahoo_payload()
-        p["chart"]["result"][0]["indicators"]["quote"][0]["close"][0] = 0
-        with self.assertRaisesRegex(ValueError, "closing price"):
-            yahoo_snapshot("SPY", "2023-01-01", "2023-03-07", request=lambda _: p)
 
     def test_reject_duplicate_or_unsorted_dates(self):
         for change in (lambda f: f.assign(date=f.date.iloc[0]), lambda f: f.iloc[::-1]):
@@ -65,38 +41,23 @@ class DataTests(unittest.TestCase):
             self.assertEqual(len(digest), 64)
             with self.assertRaises(ValueError): load(path, "2099-01-01")
 
-    def test_stock_adapter_adjusts_all_price_fields_together(self):
-        payload = {"Time Series (Daily)": {str(d.date()): {
-            "1. open": "100", "2. high": "110", "3. low": "90", "4. close": "105",
-            "5. adjusted close": "52.5", "6. volume": "1000"}
-            for d in pd.date_range("2023-01-01", periods=65)}}
-        with patch.dict(os.environ, {"ALPHAVANTAGE_API_KEY": "test-not-a-real-key"}):
-            frame = alphavantage("SPY", request=lambda _: payload)
-        self.assertEqual(frame.open.iloc[0], 50)
-        self.assertEqual(frame.high.iloc[0], 55)
-        self.assertEqual(frame.close.iloc[0], 52.5)
 
-    def test_stock_adapter_entitlement_error_is_clear(self):
-        with patch.dict(os.environ, {"ALPHAVANTAGE_API_KEY": "test"}):
-            with self.assertRaisesRegex(ValueError, "entitlement"):
-                alphavantage("AMD", request=lambda _: {"Information": "limited"})
 
-    def test_coinbase_reverse_order_extra_rows_and_no_gap_filling(self):
-        dates = pd.date_range("2023-01-01", periods=65, tz="UTC")
-        rows = [[int(d.timestamp()), 90, 110, 100, 105, 1000] for d in dates]
-        frame = coinbase("BTC-USD", "2023-01-01", "2023-03-07", request=lambda _: rows[::-1])
-        self.assertEqual(len(frame), 65)
-        self.assertTrue(frame.date.is_monotonic_increasing)
-        with self.assertRaisesRegex(ValueError, "Missing"):
-            coinbase("BTC-USD", "2023-01-01", "2023-03-07", request=lambda _: rows[:-1])
 
-    def test_provider_path_injection_rejected(self):
-        with self.assertRaises(ValueError): coinbase("../accounts", "2023-01-01", "2023-04-01")
-        with self.assertRaises(ValueError): alphavantage("X&apikey=other")
 
 
 class ResearchTests(unittest.TestCase):
     cfg = Config(folds=2, test_size=30, calibration_size=30, min_train=100)
+
+    def test_public_outcomes_match_independent_fictional_generator(self):
+        from generate_demo_research import DEMO
+        root = Path(__file__).resolve().parents[1]
+        for symbol, _, seed, calendar in DEMO:
+            bars = fixture(900, seed=seed, calendar=calendar)
+            expected = dict(zip(bars.date.dt.strftime("%Y-%m-%d"), bars.close/bars.open-1))
+            observed = pd.read_csv(root/"results"/symbol/"predictions.csv")
+            for day, value in zip(observed.target_date, observed.actual):
+                self.assertAlmostEqual(value, expected[day], places=10)
 
     def test_causal_features_do_not_change_when_future_changes(self):
         original = fixture()

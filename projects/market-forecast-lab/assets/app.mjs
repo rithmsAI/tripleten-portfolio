@@ -13,7 +13,7 @@ function renderAssets(){
 function render(){
   renderAssets();rows=selectSessions(asset,state);state.index=Math.max(0,Math.min(state.index,rows.length-1));
   $('asset-title').textContent=`${asset.symbol} · ${asset.name}`;
-  $('asset-meta').textContent=`${asset.assetClass.toUpperCase()} / ${asset.report.input_rows_used.toLocaleString()} input bars / Data through ${date(asset.report.last_date)}`;
+  $('asset-meta').textContent=`${asset.assetClass.toUpperCase()} / ${asset.report.input_rows_used.toLocaleString()} input bars / Invented bars through ${date(asset.report.last_date)}`;
   $('window-label').textContent=rows.length?`${date(rows[0].date,true)} — ${date(rows.at(-1).date,true)} · ${rows.length} sessions`:'No sessions match this selection';
   const m=summarize(rows,state.model);
   const kpis=m?[
@@ -84,7 +84,7 @@ function renderSimulation(){
 function renderEvidence(){
   const b=asset.report.boundaries,total=asset.report.input_rows_used;
   $('split-timeline').innerHTML=b.map(f=>{const training=100*f.train_rows/total,cal=100*asset.report.config.calibration_size/total,test=100*asset.report.config.test_size/total;return `<div class="fold-item"><div class="fold-title"><span>FOLD ${f.fold} · ${f.train_rows} training rows</span><span>Test: ${date(f.test_first_target,true)} — ${date(f.test_last_target,true)}</span></div><div class="fold-graphic" role="img" aria-label="Fold ${f.fold}: ${f.train_rows} training rows, 63 calibration rows, two one-row gaps and 63 test rows"><i class="train-block" style="width:${training}%"></i><i class="cal-block" style="width:${cal}%"></i><i class="test-block" style="width:${test}%"></i></div></div>`;}).join('');
-  const entries=[['Provider',asset.provenance.provider],['Input range',`${asset.report.first_date} → ${asset.report.last_date}`],['Target window',`${asset.sessions[0].date} → ${asset.sessions.at(-1).date}`],['Price basis',asset.provenance.price_basis],['Snapshot retrieved',asset.provenance.retrieved_utc.slice(0,10)],['Model stack',`scikit-learn ${asset.report.versions.scikit_learn} · NumPy ${asset.report.versions.numpy}`]];
+  const entries=[['Provider',asset.provenance.provider],['Input range',`${asset.report.first_date} → ${asset.report.last_date}`],['Target window',`${asset.sessions[0].date} → ${asset.sessions.at(-1).date}`],['Price basis',asset.provenance.price_basis],['Generator',`Independent synthetic fixture · seed ${asset.provenance.seed}`],['Model stack',`scikit-learn ${asset.report.versions.scikit_learn} · NumPy ${asset.report.versions.numpy}`]];
   $('provenance').innerHTML=entries.map(([k,v])=>`<dt>${k}</dt><dd>${escape(v)}</dd>`).join('');$('input-hash').textContent=asset.report.input_sha256;
 }
 function download(filename,body,type){const blob=new Blob([body],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -101,13 +101,13 @@ function wire(){
   $('policy').addEventListener('change',()=>{simConfig.policy=$('policy').value;renderSimulation();});
   $('reset-sim').addEventListener('click',()=>{simConfig={fee:5,slippage:5,threshold:0,policy:'interval'};for(const k of ['fee','slippage','threshold','policy'])$(k).value=simConfig[k];renderSimulation();});
   $('download-csv').addEventListener('click',exportCSV);
-  $('download-json').addEventListener('click',()=>download(`RithmScope_${asset.symbol}_research.json`,JSON.stringify({schemaVersion:1,scope:data.scope,asset,selection:{...state},exploratorySimulation:{...simConfig,result:simulate(rows,state.model,simConfig)},warning:'Sandbox results reuse observed outcomes; they are not an untouched evaluation.'},null,2),'application/json'));
+  $('download-json').addEventListener('click',()=>download(`RithmScope_${asset.symbol}_research.json`,JSON.stringify({schemaVersion:1,scope:data.scope,dataKind:data.dataKind,asset,selection:{...state},exploratorySimulation:{...simConfig,result:simulate(rows,state.model,simConfig)},warning:'Sandbox results reuse observed outcomes; they are not an untouched evaluation.'},null,2),'application/json'));
   $('reproduce-top').addEventListener('click',()=>$('reproduce-dialog').showModal());$('close-dialog').addEventListener('click',()=>$('reproduce-dialog').close());
   document.querySelectorAll('nav a').forEach(a=>a.addEventListener('click',()=>{document.querySelectorAll('nav a').forEach(n=>n.classList.toggle('active',n===a));}));
 }
 async function start(){try{
   const response=await fetch(new URL('./research.json',import.meta.url));if(!response.ok)throw Error(`Research bundle could not load (${response.status})`);
-  data=validateBundle(await response.json());asset=data.assets.find(a=>a.symbol==='BTC-USD')||data.assets[0];
+  data=validateBundle(await response.json());asset=data.assets.find(a=>a.symbol==='DEMO-CRYPTO-A')||data.assets[0];
   wire();$('research-content').hidden=false;render();
 }catch(error){$('load-error').hidden=false;$('load-error').textContent=`Could not load the dashboard: ${error.message}. Open the GitHub README for the research results.`;$('asset-picker').innerHTML='';}}
 start();

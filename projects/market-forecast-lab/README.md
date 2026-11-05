@@ -1,173 +1,95 @@
 # RithmScope · Market Forecast Lab
 
-**Can a daily return forecast improve on simple baselines once time ordering, uncertainty and trading costs are respected?** RithmScope makes that question reproducible for stocks, ETFs and crypto. It produces auditable forecasts, evaluation tables and a portable HTML report rather than treating an indicator as a profitable strategy.
+**[Open the synthetic engineering demonstration](https://rithmsai.github.io/tripleten-portfolio/projects/market-forecast-lab/)**
 
-Python 3.12 · scikit-learn · chronological evaluation · empirical prediction intervals · read-only data adapters
+Python 3.12 · scikit-learn · chronological evaluation · uncertainty intervals · responsive dashboard
 
-**[Open the interactive research dashboard](https://rithmsai.github.io/tripleten-portfolio/projects/market-forecast-lab/)**
+## Current public scope
 
-## Interactive dashboard
+The public dashboard contains **invented prices only**. DEMO-STOCK, DEMO-ETF, DEMO-CRYPTO-A and DEMO-CRYPTO-B are fictional sequences, not actual securities, funds, tokens or venue observations. Every forecast, indicator, chart, score and simulated return in the bundled outputs is derived from an independent random generator. These examples demonstrate engineering behavior and establish no real-world prediction accuracy, trading performance or market edge.
 
-The browser application explores **real, committed historical research outputs** for AMD (stock), SPY (ETF), BTC-USD and ETH-USD. Select an asset, model, evaluation fold and volatility group. Inspect individual sessions with the chart or keyboard-accessible slider, compare every model against the same zero baseline, and explore a cost-sensitive strategy simulation. Data dates and input fingerprints remain visible.
+Earlier versions included third-party market-derived research outputs. Those outputs and direct provider-download adapters have been removed from the current branch and demo following a review of data-use restrictions. This normal update does not erase earlier commits, forks, downloads or copies, and is not a determination that earlier use was authorized. Historical exposure and any commercial use require separate review.
 
-The simulator distinguishes the original interval-based entry rule from an **exploratory point-forecast rule**. Fee, slippage and entry-buffer controls operate on frozen predictions; they do not retrain a model or create an untouched performance test. CSV exports include the selected forecasts, simulated outcomes and execution assumptions. JSON exports include provenance, original evaluation, selection and exploratory simulation configuration.
+## What the software demonstrates
 
-This is a buildless, dependency-free browser interface with native SVG charts, accessible controls and responsive layouts. The Python pipeline performs model training locally; the public interface has no backend, broker access, credentials, live quotes or trade execution. No analytics or external chart CDN is required. The rithmsAI portfolio homepage and résumé are not changed by this dashboard update.
+- Nine causal features: 1/5/20-session returns, 20-session volatility, range/body, EMA gap, normalized rolling RSI and relative volume.
+- Ridge regression and gradient boosted trees compared with zero-return and historical-mean baselines.
+- Prediction target: the following observed bar's open-to-close fractional return, using the preceding completed bar's features.
+- Three expanding test folds, separate earlier calibration blocks and one-row gaps at both boundaries to prevent unavailable labels crossing a split.
+- Empirical residual-based nominal 90% intervals, with measured coverage rather than guaranteed coverage claims.
+- Training-only volatility-group thresholds, frozen across all folds.
+- A dependency-free browser dashboard with SVG charts, session inspection, model/fold/group selection and CSV/JSON exports.
+- An exploratory long/cash simulator with fees, slippage, entry buffer and separate interval-bound/point-forecast rules.
 
-To preview the dashboard locally from this folder, run `python -m http.server 8000` and open `http://localhost:8000`. Opening `index.html` directly as a file will not load the JSON bundle in browsers that restrict file-origin fetches.
-
-## What it does
-
-- Builds nine causal price/volume features from completed daily bars: 1/5/20-session returns, 20-session volatility, daily range/body, EMA gap, normalized rolling RSI and relative volume.
-- Compares **Ridge regression and gradient boosted trees** against **zero-return and past-mean baselines**, reporting every model and fold.
-- Predicts **the next observed session's open-to-close fractional return**. It does not predict an exact future price, market top, or calibrated probability of winning.
-- Uses expanding training windows, a separate past calibration block, and one-row gaps to keep future labels out of each stage.
-- Estimates nominal 90% residual-based prediction intervals and measures their realized coverage.
-- Simulates a long/cash rule with fees and slippage charged on entry and exit. It can abstain; abstention is not a profitable trade.
-- Exports JSON provenance/settings, per-session predictions/positions/equity, and a standalone HTML report with no external scripts or server.
-
-## Real-data experiments: no demonstrated forecasting edge
-
-AMD and SPY use Yahoo Finance public chart snapshots over 2023-01-01 through 2025-12-31, **752 input sessions each**. Their final 189 target sessions run from **2025-04-02 through 2025-12-31**. Crypto has more sessions per year, so its last-189-session window is different; asset runs are independent and are not a combined portfolio or calendar-matched asset ranking.
-
-| Asset | Model | MAE, percentage points | Direction accuracy | Conservative simulated trades |
-|---|---|---:|---:|---:|
-| AMD | Zero baseline | 2.006 | 49.7% | 0 |
-| AMD | Historical mean | 2.007 | 47.1% | 0 |
-| AMD | Ridge | 2.064 | 50.3% | 0 |
-| AMD | Boosted trees | 2.088 | 55.0% | 0 |
-| SPY | Zero baseline | 0.603 | 48.1% | 0 |
-| SPY | Historical mean | 0.603 | 51.9% | 0 |
-| SPY | Ridge | 0.628 | 49.7% | 1 |
-| SPY | Boosted trees | 0.619 | 50.8% | 1 |
-
-Both learned models have higher forecast MAE than the zero baseline on AMD and SPY too. The conservative SPY rule enters **one** trade for each learned model (the same observed session); each isolated simulation returns about **+0.407%** after default modeled costs. One profitable observation is not evidence of a robust strategy. The dashboard flags small trade samples. [AMD evidence](results/AMD/report.json) · [SPY evidence](results/SPY/report.json).
-
-Coinbase BTC-USD and ETH-USD daily UTC bars, **2023-01-01 through 2025-12-31**, 1,096 input bars each. Evaluation uses the final **189 target sessions, 2025-06-26 through 2025-12-31**, in three non-overlapping 63-session test blocks. All model settings are fixed in source; there is no holdout-driven winner selection.
-
-| Asset | Model | MAE, percentage points | Direction accuracy | Nominal 90% interval coverage | Simulated trades |
-|---|---|---:|---:|---:|---:|
-| BTC-USD | Zero baseline | 1.405 | 50.8% | 90.5% | 0 |
-| BTC-USD | Historical mean | 1.420 | 49.2% | 88.9% | 0 |
-| BTC-USD | Ridge | 1.439 | 49.2% | 89.4% | 0 |
-| BTC-USD | Boosted trees | 1.501 | 51.9% | 86.2% | 0 |
-| ETH-USD | Zero baseline | 2.552 | 47.6% | 89.9% | 0 |
-| ETH-USD | Historical mean | 2.554 | 52.4% | 90.5% | 0 |
-| ETH-USD | Ridge | 2.586 | 47.6% | 90.5% | 0 |
-| ETH-USD | Boosted trees | 2.683 | 48.1% | 90.5% | 0 |
-
-**Both learned models have higher MAE than the zero baseline on both crypto assets.** The crypto interval-based rule never enters: simulated net return and drawdown are both zero because it holds cash, not because it found a safe profitable strategy. These results do not establish a useful trading edge. This sample is small and its outcomes do not establish statistical significance.
-
-[BTC results](results/BTC-USD/report.json) · [ETH results](results/ETH-USD/report.json) · [BTC predictions](results/BTC-USD/predictions.csv) · [ETH predictions](results/ETH-USD/predictions.csv). Download `results/<symbol>/report.html` to view the visual report locally. Input hashes and retrieval manifests are included; raw provider bars are kept out of git. This repository contains derived research outputs, not a licensed market-data redistribution service.
+No accounts, live quotes, model-provider calls, external data downloads, broker integration or order execution are included. The browser reads a bundled synthetic JSON file; Python performs local model fitting. No server, analytics service or external chart CDN is required.
 
 ## Run locally
 
-From this project directory, use Python 3.12 in a virtual environment:
+Use Python 3.12 from this directory:
 
 ```bash
 python -m venv .venv
-# Windows PowerShell:
+# Windows PowerShell activation:
 .venv\Scripts\Activate.ps1
 # macOS/Linux alternative: source .venv/bin/activate
 python -m pip install -r requirements.txt
 python -m unittest discover -s tests -v
 python demo.py
+python build_dashboard.py --check
+node --test tests/dashboard.test.mjs
+python -m http.server 8000
 ```
 
-Open `output/synthetic-demo/report.html`. **This offline demo contains invented prices, not market results.** It needs no keys, trading account, or network connection after dependency installation. Run commands one line at a time; use the activation command for your OS.
+Open http://localhost:8000. Node 24 is used for the JavaScript tests; the browser application itself has no Node build step. `demo.py` also creates a standalone HTML report in `output/synthetic-demo/`. Run the activation command appropriate to your OS.
 
-### Reproduce the real crypto experiment
+To regenerate all four public examples without network access:
 
 ```bash
-python -m rithmscope download --provider coinbase --symbol BTC-USD --start 2023-01-01 --end 2026-01-01 --output data/BTC-USD.csv
-python -m rithmscope evaluate --csv data/BTC-USD.csv --symbol BTC-USD --asset-class crypto --through 2025-12-31 --source "Coinbase Exchange daily UTC candles" --output output/BTC-USD
-python -m rithmscope forecast --csv data/BTC-USD.csv --symbol BTC-USD --asset-class crypto --through 2025-12-31 --source "Coinbase Exchange daily UTC candles" --output output/BTC-USD
-```
-
-Repeat with `ETH-USD`. The download end is **exclusive**. The example forecast is historical as of December 31, 2025, not today's signal. For a newer research run, download a later completed range, supply its completion cutoff, and rerun. Forecasting always uses the prespecified Ridge model, even if another model scored better on a test fold.
-
-The Coinbase adapter is public/read-only, paginates 250-day chunks, filters extra response candles, sorts, detects conflicting duplicates and rejects missing UTC days. Missing bars are not forward filled. Historical providers may revise data; a new download can have a different hash and results. Coinbase documents incomplete historical intervals and a 300-candle limit per request.
-
-### Stocks and ETFs
-
-Use the same `evaluate` and `forecast` commands with `--asset-class stock` or `--asset-class etf`. AMD and SPY now have measured historical results above. The Alpha Vantage adapter remains covered by mocked-provider tests; no authenticated Alpha Vantage download has been verified.
-
-To reproduce the included stock/ETF snapshot import:
-
-```bash
-python -m rithmscope download --provider yahoo-snapshot --symbol SPY --start 2023-01-01 --end 2026-01-01 --output data/SPY.csv
-python -m rithmscope evaluate --csv data/SPY.csv --symbol SPY --asset-class etf --through 2025-12-31 --source "Yahoo Finance public chart snapshot" --output output/SPY
-```
-
-Repeat with `AMD` and `--asset-class stock`. **Yahoo's public chart endpoint is experimental, not a supported API contract or a production feed.** Availability may change; failure is explicit and does not silently substitute another source. No authentication, cookie or access restriction is bypassed. Yahoo's [SPY](https://finance.yahoo.com/quote/SPY/history/) and [AMD](https://finance.yahoo.com/quote/AMD/history/) history pages identify the source instruments. All OHLC fields are scaled consistently by adjusted-close/raw-close; volume retains the provider's values. Dates use the exchange timezone. Adjustment histories are retrospective and can be revised. Provider terms continue to apply; use licensed CSV imports for a stable, entitled data workflow. Raw bars are not committed.
-
-Option A: provide a CSV you are entitled to use, with **exactly** these columns and ascending unique session dates:
-
-```csv
-date,open,high,low,close,volume
-2025-01-02,100,103,99,102,1000000
-2025-01-03,102,104,101,103,1100000
-```
-
-Those two rows show the schema only. Default evaluation needs at least **527 raw bars** without missing feature rows; use several years. All four OHLC prices must use a consistent adjustment basis. Do not mix adjusted close with raw open. You must verify exchange sessions, symbol identity, corporate actions, provider licensing and that each included bar is complete. The CSV validator cannot certify these.
-
-Option B: use the read-only Alpha Vantage adjusted daily adapter:
-
-```powershell
-$env:ALPHAVANTAGE_API_KEY = "your-local-key"
-python -m rithmscope download --provider alphavantage --symbol SPY --output data/SPY.csv
-python -m rithmscope evaluate --csv data/SPY.csv --symbol SPY --asset-class etf --through 2025-12-31 --source "Alpha Vantage adjusted daily" --output output/SPY
-```
-
-The **adjusted daily/full history endpoint may require a paid provider entitlement**; do not assume a free key is sufficient. No purchase is required to use CSV imports or the crypto demo. The adapter applies `adjusted_close / raw_close` to all OHLC prices; volume remains the provider's raw volume. Adjustment histories can be revised, and raw volume can jump around splits. API keys stay in environment variables and are never included in output manifests. Provider requests are read-only; broker credentials are not used.
-
-## Evaluation and simulation contract
-
-At completed bar `t`, features use only bars up to `t`; the target is `close[t+1]/open[t+1] - 1`. Each fold uses all earlier training rows, one omitted feature row, 63 calibration rows, another omitted feature row, and 63 test rows. The omitted rows ensure the last label in a block predates the first feature date in the next block. Calibration data does not fit the model. Trees disable random early-stopping validation; the Ridge scaler fits training rows only. Later folds may train on outcomes from earlier folds once those outcomes are historical. No random train/test split is used.
-
-For residual radius, sort absolute calibration errors and take order statistic `ceil((n+1)*(1-alpha))`. Intervals are `prediction ± radius`. This resembles split conformal calibration, but **market observations are dependent and nonstationary; no distribution-free coverage guarantee is claimed**. Nominal coverage is a target, not a success probability or a confidence level about profitability.
-
-Entry is decided using `lower_bound > 2*(fee_bps + slippage_bps)/10000`. Entry is modeled at the following session's open and exit at its close, using 100% of the isolated per-symbol research notional; cash otherwise earns zero. A trade's net factor is `(1 + actual_return) * (1-c)/(1+c)`, where `c` is the per-side combined cost. The entry threshold is a conservative approximate cost screen; the realized cost formula is used for P&L. There is no leverage, shorting, cross-asset capital allocation or order handling.
-
-Default fees and slippage are **hypothetical 5 bps each per side**, not a quote from a broker or exchange. Change both with CLI flags. Always-long intraday is a same-window comparison with the same daily round-trip costs; it is **not buy-and-hold**. Crypto UTC boundaries offer essentially no computation delay between bars: modeled next-open fills are idealized and may not be attainable. Equity auction availability, latency, spread changes, market impact, partial fills, taxes, financing and cash interest are not modeled. No annualized Sharpe ratio is reported.
-
-`--through` is the user's explicit completed-bar cutoff and must precede today's UTC date. Data after it is excluded; the hash covers the whole input file. Forecasts use the last available completed bar, which can be stale; `as_of_completed_bar` is always included. Stocks/ETFs use observed session order rather than a hard-coded holiday calendar. No claim of current live-market status is made.
-
-Volatility groups are defined using the 33rd/67th percentiles of 20-session volatility in the **first fold's training rows** and then frozen across all folds. Each test session's group uses its preceding completed bar's feature. Dashboard subgroup metrics are descriptive, can have very few observations, and reuse the same held-out sample. Selecting a group in the sandbox compounds only those selected sessions; omitted dates are excluded from that exploratory comparison. Group results must not be mistaken for an independently validated regime-switching strategy.
-
-## Verification and files
-
-**21 Python tests and 14 JavaScript tests** exercise malformed data, adjustment consistency, provider failures, chronological label availability, future-data perturbations, training-only regime thresholds, finite-sample calibration, two-sided costs, first-trade drawdown, abstention, empty selections, deterministic results, stock/ETF/crypto CLI paths and HTML escaping. Browser calculations are reconciled with all 16 asset/model Python result sets. GitHub Actions runs both suites, a deterministic dashboard-bundle check and an offline end-to-end demo on Linux and Windows; no account keys or provider network requests are required in CI.
-
-```bash
+python generate_demo_research.py
+python build_dashboard.py
 python build_dashboard.py --check
 node --test tests/dashboard.test.mjs
 ```
 
-`build_dashboard.py` derives `assets/research.json` from committed JSON/CSV outputs. Regenerating model results also writes `indicators.csv` with derived features for the held-out target sessions. After intentionally replacing the source artifacts, run `python build_dashboard.py` and rerun the checks. Never change the browser bundle alone to improve a displayed result.
+Each example has 900 independently generated input rows. Fixed seeds 101/202/303/404 and the generator source are recorded in its manifest. The fictional stock/ETF examples use a business-day sequence, not a verified exchange holiday calendar. Crypto-shaped examples use daily date steps. Differences among these invented sequences are not real asset comparisons.
 
-```text
-rithmscope/data.py       bounded CSV validation and read-only provider adapters
-rithmscope/model.py      features, folds, models, calibration, simulation
-rithmscope/report.py     self-contained HTML and SVG report
-rithmscope/__main__.py   download / evaluate / forecast CLI
-tests/                  leakage and behavior checks
-results/                measured AMD/SPY/BTC/ETH outputs and provenance
-index.html              interactive research dashboard
-assets/core.mjs         independently tested browser calculations
-assets/app.mjs          controls, SVG charts and downloads
-assets/research.json    deterministic bundle of four real-data experiments
-build_dashboard.py      bundle generation and stale-output checks
+## User-supplied CSV research
+
+The local engine accepts a CSV with exactly `date,open,high,low,close,volume`, ascending unique ISO dates, finite positive OHLC prices, consistent high/low bounds and nonnegative volume. Default evaluation requires at least 527 raw bars without missing feature rows. All four prices must share a consistent adjustment basis.
+
+```bash
+python -m rithmscope evaluate --csv your-authorized-bars.csv --symbol YOUR-SYMBOL --asset-class stock --through 2025-12-31 --source "Your independently authorized source" --output output/private-run
+python -m rithmscope forecast --csv your-authorized-bars.csv --symbol YOUR-SYMBOL --asset-class stock --through 2025-12-31 --source "Your independently authorized source" --output output/private-run
 ```
 
-For review: start with the split-boundary tests, compare the zero baseline with the learned models, inspect `boundaries` and `fold_metrics` in JSON, then reconcile predictions with the source hash. Separate asset runs are independent experiments; their returns cannot be summed into a portfolio return.
+`--asset-class` also accepts `etf` and `crypto`. Dates are examples, not instructions to obtain or use any provider's data. Verify that your rights explicitly cover the intended access, ML training/evaluation, retention, display, derived outputs and commercial use. A public endpoint, API key or paid subscription alone does not establish those rights. The engine cannot certify data licensing, corporate actions, session completeness or commercial suitability. Keep private or restricted input and output files out of public git.
 
-## Boundaries and next experiments
+The completion cutoff must precede today's UTC date. Later rows are excluded, while the input fingerprint covers the whole CSV. The latest available bar may be stale; forecasts always identify their completed-bar date. There is no automatic freshness assertion or market-hours service.
 
-This is an independent engineering and forecasting research project, not an autonomous trading bot. It has no Robinhood, E-Trade, TradingView or order-routing integration. It does not cover options, forex, news sentiment or intraday streaming. It is not a registered advisory service or a claim of SEC/FINRA approval. Broker integration would require separate design, authorization and operational controls.
+## Evaluation and simulation contract
 
-Useful next experiments: validate corporate-action handling and exchange calendars against a licensed point-in-time feed; predefine additional assets and longer horizons; add nested chronological model selection if tuning is introduced; measure execution latency and realistic venue costs; keep a genuinely untouched forward paper-research period. The current test window is now observed and must not be presented as a new untouched test after tuning. No scheduled data refresh or forward-forecast archive is active.
+At completed bar t, inputs use only bars through t. The target is close[t+1]/open[t+1] - 1. Training labels precede calibration feature dates; calibration labels precede test feature dates. Ridge scaling uses training rows only. Trees disable random early-stopping validation. Calibration does not fit the estimator. Later folds may train on earlier outcomes after those outcomes become historical. All model settings are fixed; there is no test-driven winner selection.
 
-Primary references: [Coinbase candle API](https://docs.cdp.coinbase.com/api-reference/exchange-api/rest-api/products/get-product-candles), [Alpha Vantage adjusted daily API](https://www.alphavantage.co/documentation/#dailyadj), [scikit-learn time-series evaluation and uncertainty example](https://scikit-learn.org/stable/auto_examples/applications/plot_time_series_lagged_features.html).
+Absolute calibration errors are sorted; interval radius is order statistic ceil((n+1)*(1-alpha)). Market dependence and distribution changes can invalidate nominal coverage. No distribution-free guarantee or calibrated win probability is claimed. Public examples use invented data and cannot validate these assumptions for financial use.
 
-Created by Kaya Robinson / **rithmsAI**. AI-assisted development was used; source, assumptions, tests and measured limitations are available for review. MIT-licensed code; third-party data retains its providers' terms.
+Volatility groups use first-fold training terciles of 20-session volatility and remain fixed. Group metrics reuse the selected observed outcomes, may contain very few rows and are descriptive rather than independent validation.
+
+The conservative entry rule requires lower interval bound > 2*(fee_bps+slippage_bps)/10000 plus any sandbox buffer. The exploratory point rule substitutes the point forecast. A modeled trade enters at the next open and exits at that close; its net factor is (1+actual_return)*(1-c)/(1+c), with per-side cost c. Cash has zero return. Defaults of 5 bps fee and 5 bps slippage per side are hypothetical and do not quote any broker. No-trade results have no win-rate claim.
+
+The always-long intraday comparison pays daily round-trip costs and is not buy-and-hold. Starting cash is included in drawdown calculations. Selected volatility-group simulations omit other dates. Latency, auctions, spread dynamics, liquidity, market impact, taxes, financing, interest, leverage, shorts and portfolio capital allocation are not modeled. Sandbox adjustments do not retrain the model or create an untouched test.
+
+## Verification and public artifacts
+
+16 Python tests exercise strict input validation, chronological label availability, future-input perturbations, training-only regime thresholds, finite-sample calibration, two-sided costs, deterministic results, forecasting, three asset-class CLI paths and HTML escaping. 15 JavaScript tests exercise filtering, simulation costs, initial-trade drawdown, abstention, empty selections, malformed inputs and synthetic-only provenance. Browser calculations reconcile with all 16 synthetic asset/model Python result sets. GitHub Actions runs both suites and the deterministic bundle check on Windows and Linux without provider requests or account keys.
+
+`results/DEMO-*/` contains synthetic report.json, predictions.csv, indicators.csv, report.html and data.metadata.json. `build_dashboard.py` checks their manifests and derives `assets/research.json`; `--check` rejects a stale bundle. Public files must be regenerated from independent fictional inputs, not substituted market observations or adjusted scores.
+
+## Commercial boundary and licensing
+
+This public research code was released under the MIT License. MIT permits commercial use, modification and redistribution subject to its conditions, and permits others to exercise those rights too. This project does not promise exclusive commercial rights to code already released. The MIT notice is retained; it does not license third-party data or authorize uses restricted by data-provider agreements.
+
+A future paid offering would require a separately designed private service, a deliberate licensing/ownership decision, appropriately authorized data, customer terms and a review of applicable financial regulation. That offering does not exist in this public repository. An educational label or disclaimer does not determine regulatory status. No SEC/FINRA approval, compliance certification, expected return or paid-product readiness is claimed.
+
+This cleanup changes the current branch and deployed demonstration; it does not remove earlier material from repository history or third-party copies. Review that history before making exclusivity, rights-clearance or commercial-launch claims.
+
+Created by Kaya Robinson / rithmsAI. AI-assisted development was used. Source, assumptions, synthetic provenance and validation are available for review.

@@ -1,0 +1,13 @@
+{
+  "kind": "synthetic",
+  "provider": "Independent synthetic generator",
+  "symbol": "DEMO-STOCK",
+  "seed": 101,
+  "generator": "rithmscope.demo_data.fixture; independent normal draws; 900 rows",
+  "calendar": "B",
+  "price_basis": "Fictional OHLCV; no actual securities, tokens or exchange observations",
+  "sha256": "1cd78170c721cdd2e7f4d2af65129d9beab74b05bc693fe9e0b00d16e855c7a6",
+  "rows": 900,
+  "first_date": "2022-01-03",
+  "last_date": "2025-06-13"
+}

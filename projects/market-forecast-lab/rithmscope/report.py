@@ -4,6 +4,8 @@ import numpy as np
 
 
 def render(report, predictions):
+    data_label = "SYNTHETIC ENGINEERING DEMO — INVENTED PRICES" if report.get("data_kind") == "synthetic" else "USER-SUPPLIED CSV RESEARCH"
+    data_note = "Invented data demonstrates software behavior and does not measure actual market performance." if report.get("data_kind") == "synthetic" else "Verify data provenance and usage rights independently."
     rows = []
     for name, m in report["metrics"].items():
         rows.append(f"<tr><th>{escape(name)}</th><td>{m['mae']*100:.3f}%</td>"
@@ -22,7 +24,7 @@ def render(report, predictions):
 <style>:root{{color-scheme:dark}}*{{box-sizing:border-box}}body{{margin:0;background:#0b171e;color:#e4eeee;font:16px/1.65 system-ui,sans-serif}}main{{max-width:1120px;margin:auto;padding:48px 24px}}small,.muted{{color:#a6bcc1}}h1{{font-size:clamp(36px,6vw,64px);line-height:1.1;margin:12px 0}}h2{{font-size:23px;margin-top:36px}}.brand{{color:#b6e9df;letter-spacing:.12em;font-weight:700}}.panel{{background:#11232c;border:1px solid #29404a;border-radius:16px;padding:24px;margin:24px 0}}.pill{{color:#e5a278;font-weight:600}}table{{border-collapse:collapse;width:100%;font-size:14px}}td,th{{text-align:left;padding:13px 10px;border-bottom:1px solid #29404a;white-space:nowrap}}.scroll{{overflow:auto}}svg{{width:100%;height:auto}}code{{overflow-wrap:anywhere;font-size:12px}}a{{color:#b6e9df}}</style>
 <main><div class="brand">rithmsAI / RITHMSCOPE</div><h1>Measure the forecast.<br>Question the edge.</h1>
 <p class="muted">{escape(report['symbol'])} · {escape(report['asset_class'])} · {escape(report['first_date'])} → {escape(report['last_date'])}</p>
-<div class="panel"><span class="pill">HISTORICAL RESEARCH</span><p>Predict the next observed session’s open-to-close return from the preceding completed daily bar. Three expanding evaluation folds; separate past calibration; one-row gaps at both boundaries. Fixed model settings, no winner selection.</p><p>No orders, live quotes or guaranteed profits. Forecast intervals are empirical estimates; time dependence can invalidate nominal coverage.</p></div>
+<div class="panel"><span class="pill">{escape(data_label)}</span><p>Predict the next observed session’s open-to-close return from the preceding completed daily bar. Three expanding evaluation folds; separate past calibration; one-row gaps at both boundaries. Fixed model settings, no winner selection.</p><p>No orders, live quotes or guaranteed profits. {escape(data_note)} Forecast intervals are empirical estimates; time dependence can invalidate nominal coverage.</p></div>
 <h2>All models, including the baselines</h2><p class="muted">MAE is in percentage points of return. Direction accuracy counts zero as non-positive. Costs per side: {report['config']['fee_bps']:g} bps fee + {report['config']['slippage_bps']:g} bps slippage. Full-notional independent intraday simulations.</p>
 <div class="panel scroll"><table><thead><tr><th>Model</th><th>MAE</th><th>Direction</th><th>Coverage</th><th>Interval width</th><th>Trades</th><th>Net return</th></tr></thead><tbody>{''.join(rows)}</tbody></table></div>
 <h2>Ridge forecast interval and realized return</h2><p class="muted">Observed sessions left to right. Mint: realized next-session return; copper: lower and upper nominal 90% bounds. Bounds are fixed within each evaluation fold.</p>

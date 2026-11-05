@@ -5,8 +5,8 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-ASSETS = {"AMD": "Advanced Micro Devices", "SPY": "SPDR S&P 500 ETF Trust",
-          "BTC-USD": "Bitcoin / USD", "ETH-USD": "Ethereum / USD"}
+ASSETS = {"DEMO-STOCK": "Fictional stock sequence", "DEMO-ETF": "Fictional ETF sequence",
+          "DEMO-CRYPTO-A": "Fictional crypto sequence A", "DEMO-CRYPTO-B": "Fictional crypto sequence B"}
 MODELS = ["zero", "historical_mean", "ridge", "boosted_trees"]
 
 
@@ -43,7 +43,7 @@ def build(root=ROOT):
         assets.append({"symbol": symbol, "name": name, "assetClass": report["asset_class"],
                        "report": report, "provenance": provenance, "sessions": ordered})
     return {"schemaVersion": 1, "models": MODELS, "assets": assets,
-            "scope": "Historical, independent per-asset research. Not live quotes or a combined portfolio."}
+            "dataKind": "synthetic", "scope": "Invented engineering examples only. No market data, real tickers, investment performance or live signals."}
 
 
 def main():
@@ -55,7 +55,7 @@ def main():
     if args.check:
         if target.read_text(encoding="utf-8") != content:
             raise SystemExit("Dashboard bundle differs from source research artifacts; run build_dashboard.py")
-        print("Dashboard bundle matches all four committed research datasets")
+        print("Dashboard bundle matches all four committed synthetic engineering datasets")
     else:
         target.parent.mkdir(exist_ok=True)
         target.write_text(content, encoding="utf-8")

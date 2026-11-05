@@ -59,3 +59,14 @@ test('research bundle validation rejects reversed dates and malformed bounds',()
   const a=structuredClone(bundle);a.assets[0].sessions.reverse();assert.throws(()=>validateBundle(a));
   const b=structuredClone(bundle);b.assets[0].sessions[0].forecasts.ridge.lower=9;assert.throws(()=>validateBundle(b));
 });
+
+
+test('public bundle contains invented sequences with no market-provider provenance',()=>{
+  assert.equal(bundle.dataKind,'synthetic');
+  for(const a of bundle.assets){
+    assert.ok(a.symbol.startsWith('DEMO-'));
+    assert.equal(a.provenance.kind,'synthetic');
+    assert.equal(a.report.data_kind,'synthetic');
+    assert.equal(a.provenance.provider,'Independent synthetic generator');
+  }
+});
