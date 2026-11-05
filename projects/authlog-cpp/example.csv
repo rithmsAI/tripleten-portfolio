@@ -1,0 +1,7 @@
+timestamp,principal,outcome
+0,analyst-01,failure
+10,analyst-01,failure
+20,analyst-01,failure
+30,analyst-01,failure
+40,analyst-01,failure
+41,operator-02,success

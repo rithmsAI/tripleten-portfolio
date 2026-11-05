@@ -7,4 +7,8 @@ Enterprise technology, applied machine learning and software engineering portfol
 - [Transaction Anomaly Lab](https://github.com/rithmsAI/transaction-anomaly-lab): synthetic anomaly evaluation, local API, SQL audit behavior and 24 tests.
 - [Data-Center Sustainability Analytics](https://github.com/rithmsAI/datacenter-sustainability): public-source resource analysis with provenance, reproducible notebook and 9 tests.
 
+- [AuthLog](projects/authlog-cpp/): Detect repeated authentication failures in an ordered event stream while rejecting ambiguous or oversized input. [Case study](https://rithmsai.github.io/tripleten-portfolio/projects/authlog-cpp/).
+- [Telemetry Shift Lab](projects/torch-telemetry/): Compare a linear classifier and a small neural network, then observe what happens when the telemetry distribution shifts. [Case study](https://rithmsai.github.io/tripleten-portfolio/projects/torch-telemetry/).
+- [Access Control Lab](projects/access-control-lab/): Exercise analyst/admin authorization, event validation and atomic audit records in a constrained local container. [Case study](https://rithmsai.github.io/tripleten-portfolio/projects/access-control-lab/).
+
 These are independent projects, not professional software-engineering employment or production deployments. Each project documents its data provenance and limitations. AI-assisted development was used. TraceBench evaluates supplied outputs using deterministic checks; bundled outputs and measurements are synthetic, and no model provider is called.
