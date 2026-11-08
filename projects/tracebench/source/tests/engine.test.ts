@@ -25,3 +25,34 @@ test('all pass requires every independent check',()=>{const d=fresh();d.cases=[d
 test('export re-evaluation is deterministic and human notes cannot override scores',()=>{const d=fresh();const before=report(d,gates),after=report(d,gates,{'TB-003':'Approve manually'});assert.deepEqual(before.results,after.results);assert.deepEqual(before.decision,after.decision);assert.deepEqual(evaluate(parseDataset(JSON.stringify(after.dataset))),evaluate(d));});
 test('empty results can never satisfy release criteria',()=>{assert.equal(assess([],{...gates,minimumPassRate:0}).passed,false);});
 test('HTML payloads remain strings in evaluation reports',()=>{const d=fresh();d.cases[0].candidate.answer='<img src=x onerror=alert(1)> 90 days';const r=report(parseDataset(JSON.stringify(d)),gates);assert.equal(r.dataset.cases[0].candidate.answer,d.cases[0].candidate.answer);});
+
+test('rejects invalid numeric gate configuration instead of issuing a decision',()=>{
+ const rows=evaluate(fresh());
+ for(const change of [{minimumPassRate:-.1},{minimumPassRate:1.1},{minimumPassRate:NaN},{maximumP95:Infinity},{maximumP95:-1},{maximumCost:-1},{maximumCost:NaN},{maximumCost:'1'}]){
+  assert.throws(()=>assess(rows,{...gates,...change} as any),/gate/i);
+ }
+});
+test('requires an explicit boolean critical-regression gate',()=>{
+ for(const blockCriticalRegressions of [undefined,null,0,'false']){
+  assert.throws(()=>assess(evaluate(fresh()),{...gates,blockCriticalRegressions} as any),/gate/i);
+ }
+});
+test('rejects imported costs whose aggregate overflows JSON numbers',()=>{
+ for(const side of ['baseline','candidate'] as const){
+  const d=fresh();d.cases[0][side].costUsd=1e308;d.cases[1][side].costUsd=1e308;
+  assert.throws(()=>parseDataset(JSON.stringify(d)),/total.*cost/i);
+ }
+});
+test('reports reject unknown, non-text, and overlong review notes',()=>{
+ for(const reviews of [{unknown:'Observation'},{'TB-003':42},{'TB-003':'x'.repeat(4001)}]){
+  assert.throws(()=>report(fresh(),gates,reviews as any),/review/i);
+ }
+});
+test('reports reject invalid gates before export',()=>{
+ assert.throws(()=>report(fresh(),{...gates,maximumCost:Infinity}),/gate/i);
+});
+test('valid reports remain finite and deterministic after JSON round trip',()=>{
+ const first=report(fresh(),gates,{'TB-003':'Human review required.'});
+ assert.deepEqual(JSON.parse(JSON.stringify(first)),first);
+ assert.equal(first.candidate.cost,report(fresh(),gates).candidate.cost);
+});

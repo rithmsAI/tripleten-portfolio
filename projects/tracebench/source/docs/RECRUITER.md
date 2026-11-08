@@ -27,6 +27,6 @@ Many demo dashboards show only an aggregate success rate. TraceBench makes a dif
 **TraceBench — AI Evaluation Workbench | React, TypeScript, Node.js**
 - Built a responsive evaluation interface comparing paired AI outputs, exposing case-level regressions and applying configurable quality, latency, cost and critical-regression gates.
 - Implemented validated JSON imports, citation-reference and lexical checks, human review notes, and reproducible reports with dataset SHA-256 fingerprints; shared the evaluation engine between the UI and CLI.
-- Verified core evaluation and validation behavior with 20 automated tests; documented synthetic data, evaluator blind spots and the distinction between supplied and measured metrics.
+- Verified core evaluation and validation behavior with 26 automated tests; documented synthetic data, evaluator blind spots and the distinction between supplied and measured metrics.
 
 Use under **Independent Projects**, not employment. This was built with AI assistance. Kaya should walk through the code, reproduce the tests and explain the limitations before using it in technical interviews. Do not claim production deployment, real-model accuracy improvements, a trained model, or measured inference savings.

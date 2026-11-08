@@ -31,7 +31,7 @@ The recovery log is a fixed fixture, not evidence that clicking a button execute
 
 These are separate implementations; the public UI is **not connected** to the local API. The test suites exercise both implementations' transition and verification rules. The API has no network integrations and must be bound to loopback. Do not expose it publicly without authentication, authorization, request-size/rate controls, production logging and a deployment threat review.
 
-The UI uses textContent for user-generated content, rather than injecting HTML. Reports are plain text, avoiding HTML interpretation and CSV formula execution. localStorage is not a secure store: browser users can alter or clear it. API audit records are append-only through the exposed routes, but a database owner can change them; neither audit mechanism is cryptographically tamper-proof. The local API uses BEGIN IMMEDIATE, a version check and parameterized SQL. A failed command rolls back when its connection closes.
+The UI uses textContent for user-generated content, rather than injecting HTML. Reports are plain text, avoiding HTML interpretation and CSV formula execution. localStorage is not a secure store: browser users can alter or clear it. API audit records are append-only through the exposed routes, but a database owner can change them; neither audit mechanism is cryptographically tamper-proof. The local API uses BEGIN IMMEDIATE, a version check and parameterized SQL. Failed commands and failed audit writes roll back together. Storage errors return a generic HTTP 503; read responses use a single database snapshot.
 
 ## Reproduce the public demo
 
@@ -62,7 +62,7 @@ curl -X POST http://127.0.0.1:8000/incidents/INC-1042/commands -H "Content-Type:
 curl http://127.0.0.1:8000/incidents/INC-1042/report
 ```
 
-Every command includes the current incident `version`; use the updated version returned by each response. Reusing an old version returns HTTP 409. Allowed command kinds: `owner`, `hypothesis`, `note`, `check`, `transition`. A check requires index 0–2 and a boolean `checked`. A transition uses the target state, newline and rationale in `text`. Unknown IDs return 404; invalid commands return 422.
+Every command includes the current incident `version`; use the updated version returned by each response. Reusing an old version returns HTTP 409. Allowed command kinds: `owner`, `hypothesis`, `note`, `check`, `transition`. A check requires index 0–2 and a boolean `checked`. A transition uses the target state, newline and rationale in `text`. Unknown IDs return 404; invalid commands return 422; database failures return 503. JSON types are strict: strings and booleans are not accepted as integer versions or indices. Check fields apply only to check commands; hypotheses require 10–2,000 characters. Reports include version and verification state.
 
 ## Validation
 
@@ -71,7 +71,7 @@ python -m unittest discover -s . -p 'test_workbench.py' -v
 node test_frontend.cjs
 ```
 
-10 API tests cover ordered transitions, verification gating, terminal state, stale writes, transactional non-mutation on failure, persistence/idempotent seeding, incident isolation, parameterized SQL, text payloads, validation, missing records and report headers. The JavaScript suite has 11 assertions covering log filters, transition rules and report content.
+17 API tests cover ordered transitions, verification gating, terminal state, stale writes, transactional non-mutation on failure, persistence/idempotent seeding, incident isolation, parameterized SQL, text payloads, validation, missing records and report headers. Additional API cases inject a failed audit insert, race writes from two independent service instances, and reject coerced types. The JavaScript suite has 22 assertions covering log filters, transition rules, report content, pristine reset state, and malformed saved-state rejection.
 
 Manual browser checks: invalid transition rationale, investigator assignment, hypothesis saving, error filtering, blocked premature resolution, all verification steps, successful resolution, disabled editing after resolution, persistence after reload and downloaded report. See TEST_RESULTS.txt for the executed results.
 
@@ -83,7 +83,7 @@ This is an operational reliability training application, not a security forensic
 
 ## Suggested next increments
 
-Connect the UI to the API behind authentication; add per-user authorization, a migration strategy, pagination, structured metrics and failure injection. Evaluate any future AI summarizer against grounded human-written incident summaries before adding it to the investigation path.
+Connect the UI to the API behind authentication; add per-user authorization, a migration strategy, pagination and structured metrics. Failure-injection tests currently cover audit insertion and database access failures. Evaluate any future AI summarizer against grounded human-written incident summaries before adding it to the investigation path.
 
 ## License
 
