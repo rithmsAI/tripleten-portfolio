@@ -40,9 +40,10 @@ The CLI and React UI share the same typed evaluation engine. The CLI uses the de
 - React + TypeScript comparison dashboard, category bars, searchable/filterable case table and side-by-side evidence inspector.
 - Strict runtime checks on imported JSON: byte/count/text limits, unique IDs, valid types, nonnegative finite costs/latencies, and source-reference configuration.
 - Deterministic phrase, citation-ID and abstention-metadata checks; paired improvement/regression classification.
+- Runtime validation of gate configuration and review notes; imports reject cost totals that exceed finite numeric range.
 - Adjustable pass-rate, p95 latency, total-cost and critical-regression gates over the complete dataset.
 - Human review annotations and reproducible JSON export, including input provenance and a dataset fingerprint.
-- Shared command-line evaluation, 20 automated tests, strict type checking and a reproducible locked dependency build.
+- Shared command-line evaluation, 26 automated tests, strict type checking and a reproducible locked dependency build.
 - Responsive layout, labeled inputs, visible keyboard focus, semantic tables, status announcements and no HTML injection of imported text.
 
 ## Honest boundaries

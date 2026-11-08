@@ -24,6 +24,8 @@ Review notes are separate from automated results. Table filters do not alter the
 | Markup in output/notes | React text rendering; no `dangerouslySetInnerHTML` | No formal browser security audit |
 | Spreadsheet formula execution | JSON-only export | Consumers must handle exported strings safely |
 | Exfiltration / accidental key exposure | No provider calls or key field; no file upload to backend | Hosting and external font services see normal web requests |
+| Invalid release policy | Finite bounded gate values and explicit boolean critical-regression policy | Valid thresholds can still be poorly chosen |
+| Numeric overflow | Import rejects nonfinite aggregate costs | Supplied measurements remain unverified |
 | Misleading aggregate quality | Paired regression views and critical gate | Synthetic labels can be wrong; checks miss semantic errors |
 | False reproducibility claims | Full inputs and engine version in report | Hash is order-sensitive and not signed; no provenance attestation |
 | Losing notes | Export includes annotations | Reload loses tab-memory state; no autosave |
@@ -34,6 +36,6 @@ The fixture is a scenario demonstration, not a representative dataset. Categorie
 
 ## Verification
 
-Executed locally on 2026-11-04: 20 Node test cases passed, TypeScript strict checking passed, Vite production build passed, and CLI example report generated. Browser QA and hosted status are recorded separately in `VALIDATION.md` when completed.
+Executed locally on 2026-11-08: 26 Node test cases passed, TypeScript strict checking passed, Vite production build passed, and CLI example report generated. Browser QA and hosted status are recorded separately in `VALIDATION.md` when completed.
 
 Documentation references: [React](https://react.dev/learn), [Vite relative builds](https://vite.dev/guide/build#relative-base), [Node test runner](https://nodejs.org/api/test.html), [Web Crypto digest](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest).
