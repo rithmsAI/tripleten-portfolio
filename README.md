@@ -9,6 +9,8 @@ Enterprise technology, applied machine learning and software engineering portfol
 - [Transaction Anomaly Lab](https://github.com/rithmsAI/transaction-anomaly-lab): synthetic anomaly evaluation, local API, SQL audit behavior and 30 tests.
 - [Data-Center Sustainability Analytics](https://github.com/rithmsAI/datacenter-sustainability): public-source resource analysis with provenance, reproducible notebook and 9 tests.
 
+- [House Price Prediction API — TripleTen Sprint 10](projects/house_price_api/): documented educational FastAPI service with 13-field Pydantic input validation, model metadata, `/health`, `/model/info`, `/predict`, and five offline tests with a simulated predictor. [Portfolio case study](https://rithmsai.github.io/tripleten-portfolio/projects/house_price_api/). The completed local course project was submitted separately; public source here is a reconstruction, and the course-provided trained model is not redistributed.
+
 - [AuthLog](projects/authlog-cpp/): Detect repeated authentication failures in an ordered event stream while rejecting ambiguous or oversized input. [Case study](https://rithmsai.github.io/tripleten-portfolio/projects/authlog-cpp/).
 - [Telemetry Shift Lab](projects/torch-telemetry/): Compare a linear classifier and a small neural network, then observe what happens when the telemetry distribution shifts. [Case study](https://rithmsai.github.io/tripleten-portfolio/projects/torch-telemetry/).
 - [Access Control Lab](projects/access-control-lab/): Exercise analyst/admin authorization, event validation and atomic audit records in a constrained local container. [Case study](https://rithmsai.github.io/tripleten-portfolio/projects/access-control-lab/).
