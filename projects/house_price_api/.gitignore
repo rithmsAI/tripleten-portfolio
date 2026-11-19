@@ -1,0 +1,8 @@
+model.pkl
+.venv/
+.venv312/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+__MACOSX/
+.DS_Store

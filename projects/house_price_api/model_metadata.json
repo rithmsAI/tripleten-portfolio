@@ -1,0 +1,12 @@
+{
+  "model_type": "RandomForestRegressor",
+  "version": "1.0.0",
+  "features": [
+    "total_images", "beds", "baths", "area",
+    "latitude", "longitude", "garden", "garage",
+    "new_construction", "pool", "terrace", "air_conditioning", "parking"
+  ],
+  "training_date": "2025-11-17",
+  "rmse": 15928.86,
+  "description": "Random forest regressor"
+}
