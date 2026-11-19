@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="House-price prediction FastAPI portfolio case study: typed inputs, validated inference, model metadata and repeatable tests.">
+  <title>House Price API · rithmsAI Portfolio</title>
+  <link rel="stylesheet" href="../../assets/site.css">
+  <style>
+    main{max-width:1050px;margin:auto;padding:64px 24px 100px}
+    h1{font-size:clamp(38px,6vw,68px);line-height:1.09;max-width:850px}
+    h2{font-size:clamp(24px,4vw,34px);margin-top:44px}
+    p{line-height:1.85;max-width:870px}
+    .lede{font-size:20px;color:var(--muted)}
+    .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:32px 0}
+    .item{border:1px solid var(--line);padding:22px;border-radius:16px}
+    .item strong{display:block;margin-bottom:10px}
+    .item p{font-size:14px;margin:0;color:var(--muted)}
+    table{width:100%;border-collapse:collapse;margin:20px 0}
+    th,td{text-align:left;padding:14px;border-bottom:1px solid var(--line)}
+    pre{overflow:auto;background:#122634;color:#f4f7f8;border-radius:14px;padding:20px;line-height:1.7}
+    .note{padding:18px;border-left:3px solid #8bc5b8;background:var(--surface,transparent);color:var(--muted)}
+    .small{font-size:13px;color:var(--muted)}
+    @media(max-width:700px){.cards{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <main>
+    <a href="../../">← Back to engineering portfolio</a>
+    <p class="eyebrow" style="margin-top:48px">TripleTen Sprint 10 / Applied ML service</p>
+    <h1>From a trained model<br>to a tested API.</h1>
+    <p class="lede">A house-price prediction service built around typed inputs, consistent model feature ordering, repeatable model loading, and interactive FastAPI documentation.</p>
+    <p class="note">Educational case study. The published source is a separately reconstructed portfolio implementation based on the completed local coursework. The course-provided model artifact is not publicly redistributed, and this page is not a hosted prediction service.</p>
+    <div class="actions">
+      <a class="button" href="https://github.com/rithmsAI/tripleten-portfolio/tree/feature/house-price-api-portfolio-20261119/projects/house_price_api">View portfolio code ↗</a>
+      <a class="button secondary" href="https://github.com/rithmsAI/tripleten-portfolio/blob/feature/house-price-api-portfolio-20261119/projects/house_price_api/README.md">Setup and test instructions ↗</a>
+    </div>
+    <h2>Three endpoints. One coherent service.</h2>
+    <div class="cards">
+      <div class="item"><strong>GET /health</strong><p>Report whether the saved model and metadata are loaded; signal an unavailable service.</p></div>
+      <div class="item"><strong>GET /model/info</strong><p>Return model version, training information, error metric and the exact 13-feature order.</p></div>
+      <div class="item"><strong>POST /predict</strong><p>Validate property inputs, order features as trained, and return a typed price prediction.</p></div>
+    </div>
+    <h2>How the request travels</h2>
+    <pre><code>JSON input (13 fields)
+      ↓
+Pydantic validation
+      ↓
+Metadata-defined feature order
+      ↓
+NumPy row (1 × 13)
+      ↓
+Saved RandomForestRegressor
+      ↓
+Price + currency + model version</code></pre>
+    <h2>What was checked</h2>
+    <table>
+      <thead><tr><th>Verification</th><th>Observed or tested result</th></tr></thead>
+      <tbody>
+        <tr><td>Local Sprint 10 model loading</td><td>Successful in Python 3.12 / scikit-learn 1.5.1 environment (user-reported)</td></tr>
+        <tr><td>Local example inference</td><td>$480,032.65 (user-reported, not a performance benchmark)</td></tr>
+        <tr><td>Input validation</td><td>Invalid negative bedroom count rejected with HTTP 422</td></tr>
+        <tr><td>Offline portfolio interface tests</td><td>5 passed using a stand-in predictor; does not test the supplied trained model</td></tr>
+      </tbody>
+    </table>
+    <h2>Engineering decisions</h2>
+    <p>Keep the model in memory after startup instead of reading it from disk on every request. Order inputs using the same feature list used during training rather than relying on the order clients submit JSON keys. Separate request contracts, inference operations and HTTP routing, so failures can be diagnosed in isolation.</p>
+    <p class="small">Python · FastAPI · Pydantic · NumPy · scikit-learn · joblib · OpenAPI/Swagger UI. Based on a TripleTen course starter; local coursework was completed with AI-assisted guidance. Portfolio implementation and documentation are not a claim of independently authored course materials or production deployment.</p>
+  </main>
+</body>
+</html>
