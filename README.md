@@ -2,6 +2,12 @@
 
 Enterprise technology, applied machine learning and software engineering portfolio.
 
+## Independent projects
+
+- **rithmsAI** is Kaya Robinson’s engineering portfolio brand. The demonstrations below show applied ML, evaluation, API design, testing, and defensive engineering.
+- **Santol** is an independent project.
+- [**ModernHabit OS**](https://github.com/rithmsAI/modern-habit-os) is an independent software project with its own repository.
+
 - [RithmScope — Market Forecast Lab](projects/market-forecast-lab/): interactive forecasting engineering demonstration using independently generated fictional data, chronological evaluation, uncertainty exploration and cost-sensitive simulations. [Live synthetic dashboard](https://rithmsai.github.io/tripleten-portfolio/projects/market-forecast-lab/). No real market-performance claim; 16 Python and 15 JavaScript tests.
 
 - [TraceBench — AI Evaluation Workbench](projects/tracebench/): React/TypeScript comparison dashboard, validated imports, paired regressions, configurable release gates, reproducible JSON reports and 26 automated tests. [Live demo](https://rithmsai.github.io/tripleten-portfolio/projects/tracebench/).
@@ -14,6 +20,10 @@ Enterprise technology, applied machine learning and software engineering portfol
 - [Access Control Lab](projects/access-control-lab/): Exercise analyst/admin authorization, event validation and atomic audit records in a constrained local container. [Case study](https://rithmsai.github.io/tripleten-portfolio/projects/access-control-lab/).
 
 These are independent projects, not professional software-engineering employment or production deployments. Each project documents its data provenance and limitations. AI-assisted development was used. TraceBench evaluates supplied outputs using deterministic checks; bundled outputs and measurements are synthetic, and no model provider is called.
+
+## TripleTen AI & ML coursework
+
+TripleTen is Kaya’s formal AI and machine learning training. Sprint 10 covers APIs and web services, including a house-price API. Sprint 11 covers Docker and containerization. The coursework and independent projects both demonstrate applied technical skills. The repository URL retains the original TripleTen name.
 
 ## Technical review for prospective partners
 
