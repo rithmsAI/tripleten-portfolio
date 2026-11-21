@@ -23,7 +23,7 @@ These are independent projects, not professional software-engineering employment
 
 ## TripleTen AI & ML coursework
 
-TripleTen is Kaya’s formal AI and machine learning training. Sprint 10 covers APIs and web services, including a house-price API. Sprint 11 covers Docker and containerization. The coursework and independent projects both demonstrate applied technical skills. The repository URL retains the original TripleTen name.
+TripleTen is Kaya’s formal AI and machine learning training. Recent guided practice includes a local Titanic classification training workflow in VS Code, Python virtual environments, pip and PowerShell. Sprint 10 covers a house-price FastAPI starter, Uvicorn and Swagger/OpenAPI documentation for health, model-information and prediction endpoints. Sprint 11 studies cover Docker images, containers, dependency packaging, process isolation and Docker Desktop/WSL2 concepts. These are educational activities; no production deployment or externally reviewed local benchmark is claimed. Independent projects document their own runnable code and tests separately from coursework. The repository URL retains the original TripleTen name.
 
 ## Technical review for prospective partners
 
