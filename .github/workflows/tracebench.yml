@@ -1,0 +1,31 @@
+name: TraceBench checks
+on:
+  push:
+    paths: ['projects/tracebench/**', '.github/workflows/tracebench.yml']
+  pull_request:
+    paths: ['projects/tracebench/**', '.github/workflows/tracebench.yml']
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: projects/tracebench/source
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: projects/tracebench/source/package-lock.json
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - run: |
+          diff -r dist/assets ../assets
+          diff dist/index.html ../index.html
+          diff dist/example-dataset.json ../example-dataset.json
+      - run: |
+          npm run evaluate -- public/example-dataset.json /tmp/report.json
+          diff /tmp/report.json ../docs/example-report.json

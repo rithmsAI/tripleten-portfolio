@@ -1,0 +1,8 @@
+
+
+const pct=n=>(n*100).toFixed(1)+'%';
+
+function render(){const b=document.getElementById('budget').value;document.getElementById('results').innerHTML=Object.entries(transactionData).map(([name,values])=>{const m=values[b],alerts=m.true_positives+m.false_positives;return `<article class="result-card"><h3>${name}</h3><div class="big">${pct(m.precision)}</div><div class="caption">Precision · flagged events that are synthetic anomalies</div><div class="stats"><div><strong>${m.true_positives} / 112</strong><span class="caption">Anomalies found</span></div><div><strong>${m.false_positives}</strong><span class="caption">False alarms</span></div><div><strong>${pct(m.recall)}</strong><span class="caption">Recall</span></div><div><strong>${pct(m.alert_rate)}</strong><span class="caption">Actual test alert rate</span></div></div><div class="bar" aria-hidden="true"><div class="found" style="width:${m.precision*100}%"></div><div class="false" style="width:${(1-m.precision)*100}%"></div></div><div class="legend">${alerts} reviews · ${m.false_negatives} anomalies missed</div></article>`}).join('');document.getElementById('insight').textContent=`At a ${b}% calibration budget, rules flag ${transactionData['Rules baseline'][b].true_positives+transactionData['Rules baseline'][b].false_positives} test events; Isolation Forest flags ${transactionData['Isolation Forest'][b].true_positives+transactionData['Isolation Forest'][b].false_positives}.`;}
+
+document.getElementById('budget').addEventListener('change',render);document.getElementById('reset').addEventListener('click',()=>{document.getElementById('budget').value='5';render()});render();
+

@@ -1,0 +1,13 @@
+{
+  "kind": "synthetic",
+  "provider": "Independent synthetic generator",
+  "symbol": "DEMO-CRYPTO-B",
+  "seed": 404,
+  "generator": "rithmscope.demo_data.fixture; independent normal draws; 900 rows",
+  "calendar": "D",
+  "price_basis": "Fictional OHLCV; no actual securities, tokens or exchange observations",
+  "sha256": "ab1ab9e5f6f19e47685928bb6ebcf3d68507b4bdcbc57c3a03e055ba026a1f89",
+  "rows": 900,
+  "first_date": "2022-01-01",
+  "last_date": "2024-06-18"
+}

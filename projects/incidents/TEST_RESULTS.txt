@@ -1,0 +1,10 @@
+Executed 2026-11-08 in Python 3.12.14, FastAPI 0.143.3, Pydantic 2.13.4 and Node 24.22.1.
+
+17 unittest API tests passed. 22 JavaScript assertions passed.
+Regression cases verify strict JSON types, command-specific fields, hypothesis length, actual SQLite-trigger audit failure rollback, recovery after that failure, safe storage errors, and a same-version race across two app instances sharing one database.
+API reports now include verification state, incident version, and limitations.
+Frontend tests verify seed fixtures remain unchanged after edits and restore operations, and reject corrupt saved records.
+
+Browser regression procedure: tests/browser_smoke.py at the repository root, executed by .github/workflows/portfolio-browser.yml. See that workflow run for the browser result. Local Chromium launch was blocked by the execution environment's Unix-socket restriction.
+
+No production load, authentication, agency isolation, shared browser collaboration, security certification or cloud API deployment is claimed.
