@@ -26,7 +26,7 @@ Open the portfolio folder in VS Code. Titanic remains inside it. A portfolio ZIP
 
 Save your VS Code files and finish any running training job. This block requires the portfolio to be on `main` with no modified, staged or untracked files. It creates a timestamped backup, pulls with fast-forward only, preserves ignored leftovers, and initializes the linked project. If it stops, inspect its message before continuing; do not use reset, clean or force-push to bypass the check.
 
-Run this entire block in PowerShell:
+The path checks allow OneDrive cloud placeholders while rejecting symbolic links and junctions. Run this entire block in PowerShell:
 
 ```powershell
 & {
@@ -46,7 +46,7 @@ Run this entire block in PowerShell:
 
     $projectPath = Join-Path $portfolioPath 'titanic-ml-project'
     $project = Get-Item -LiteralPath $projectPath
-    if ($project.Attributes -band [IO.FileAttributes]::ReparsePoint) {
+    if ([bool]$project.LinkType -or [bool]$project.Target) {
         throw 'The project is a link or junction; inspect its target first.'
     }
     if (Test-Path -LiteralPath (Join-Path $projectPath '.git')) {
@@ -69,7 +69,7 @@ Run this entire block in PowerShell:
         if ($remaining.Count -gt 0) {
             $remainingProject = Get-Item -LiteralPath $projectPath
             if ($remainingProject.FullName -ne $projectPath -or
-                ($remainingProject.Attributes -band [IO.FileAttributes]::ReparsePoint) -or
+                [bool]$remainingProject.LinkType -or [bool]$remainingProject.Target -or
                 (Test-Path -LiteralPath (Join-Path $projectPath '.git'))) {
                 throw 'Unexpected project path; inspect before moving anything.'
             }
