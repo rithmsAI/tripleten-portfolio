@@ -23,7 +23,12 @@ These are independent projects, not professional software-engineering employment
 
 ## TripleTen AI & ML coursework
 
-TripleTen is Kaya’s formal AI and machine learning training. Recent guided practice includes a local Titanic classification training workflow in VS Code, Python virtual environments, pip and PowerShell. Sprint 10 covers a house-price FastAPI starter, Uvicorn and Swagger/OpenAPI documentation for health, model-information and prediction endpoints. Sprint 11 studies cover Docker images, containers, dependency packaging, process isolation and Docker Desktop/WSL2 concepts. These are educational activities; no production deployment or externally reviewed local benchmark is claimed. Independent projects document their own runnable code and tests separately from coursework. The repository URL retains the original TripleTen name.
+TripleTen is Kaya’s formal AI and machine learning training. Coursework includes Python, scikit-learn, FastAPI, Swagger/OpenAPI, Docker images and containers, and Docker Desktop/WSL2 concepts.
+
+- [**Sprint 11 — Titanic Survival Prediction API**](https://github.com/rithmsAI/titanic-ml-project): random-forest classifier with 82.68% accuracy on a single 179-passenger validation split, reproducible EDA, single and batch predictions, 57 automated API/preprocessing/health-probe tests, and Docker health monitoring verified through failure and recovery. The original model and datasets are preserved. The published Docker Hub `1.0` image remains the original submission; source improvements require rebuilding the image.
+- The `titanic-ml-project` folder is a Git submodule linked to the dedicated project repository. It keeps one canonical codebase accessible from this portfolio. See [local setup and update instructions](docs/TITANIC_WORKFLOW.md).
+
+These are educational projects. Validation scores describe the documented local dataset split, not production performance. The repository URL retains the original TripleTen name.
 
 ## Technical review for prospective partners
 
