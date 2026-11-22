@@ -1,7 +1,0 @@
-# Run with Python 3.11, matching the published model's training environment.
--r serving/requirements.txt
-pytest==8.3.5
-# Starlette 0.27's TestClient requires the pre-0.28 httpx client interface.
-httpx==0.24.1
-# Imported by the training module during preprocessing parity tests.
-matplotlib==3.7.2

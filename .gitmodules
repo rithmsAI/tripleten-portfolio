@@ -1,0 +1,4 @@
+[submodule "titanic-ml-project"]
+	path = titanic-ml-project
+	url = https://github.com/rithmsAI/titanic-ml-project.git
+	branch = main

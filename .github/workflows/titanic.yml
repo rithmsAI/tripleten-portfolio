@@ -2,9 +2,9 @@ name: Titanic checks
 
 on:
   push:
-    paths: ['titanic-ml-project/**', '.github/workflows/titanic.yml']
+    paths: ['titanic-ml-project', '.gitmodules', '.github/workflows/titanic.yml']
   pull_request:
-    paths: ['titanic-ml-project/**', '.github/workflows/titanic.yml']
+    paths: ['titanic-ml-project', '.gitmodules', '.github/workflows/titanic.yml']
   workflow_dispatch:
 
 permissions:
@@ -19,6 +19,8 @@ jobs:
         working-directory: titanic-ml-project
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
