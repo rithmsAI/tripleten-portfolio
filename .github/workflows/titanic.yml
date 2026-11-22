@@ -1,0 +1,46 @@
+name: Titanic checks
+
+on:
+  push:
+    paths: ['titanic-ml-project/**', '.github/workflows/titanic.yml']
+  pull_request:
+    paths: ['titanic-ml-project/**', '.github/workflows/titanic.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: titanic-ml-project
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: |
+            titanic-ml-project/requirements-test.txt
+            titanic-ml-project/serving/requirements.txt
+      - name: Install test dependencies
+        run: python -m pip install -r requirements-test.txt
+      - name: Verify API and preprocessing
+        run: python -m pytest tests -q
+      - name: Reproduce the EDA report
+        run: python training/explore_data.py --check
+      - name: Build serving image
+        run: docker build -t titanic-api:test serving
+      - name: Verify container health, failure and recovery
+        run: bash scripts/check_container.sh
+      - name: Container diagnostics
+        if: failure()
+        run: |
+          docker logs titanic-ci || true
+          docker inspect titanic-ci || true
+      - name: Remove test container
+        if: always()
+        run: docker rm -f titanic-ci || true

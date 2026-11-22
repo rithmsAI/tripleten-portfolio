@@ -1,4 +1,4 @@
-# TripleTen Sprint 11 — Titanic Survival Prediction API
+# TripleTen Sprint 11 - Titanic Survival Prediction API
 
 A Docker-based machine-learning project with separate training and serving environments. A random forest predicts Titanic passenger survival, and a FastAPI application serves individual and batch predictions.
 
@@ -23,6 +23,8 @@ The reported accuracy comes from one held-out validation split. It is not a Kagg
 | --- | --- |
 | training/data/ | Titanic CSV datasets |
 | training/train_model.py | Preprocessing, training, evaluation, and artifact creation |
+| training/explore_data.py | Reproducible exploration of the labeled dataset |
+| docs/eda.md | Missing values, distributions, survival rates, and limitations |
 | training/requirements.txt | Training dependencies |
 | training/Dockerfile | Training image definition |
 | training/models/ | Trained model, encoders, metadata, sample input, and charts |
@@ -30,7 +32,11 @@ The reported accuracy comes from one held-out validation split. It is not a Kagg
 | serving/requirements.txt | Serving dependencies |
 | serving/requirements-lock.txt | Installed package versions recorded from the tested container |
 | serving/Dockerfile | Serving image definition |
+| serving/healthcheck.py | Bounded readiness probe used by Docker HEALTHCHECK |
 | serving/models/ | Model artifacts packaged with the API |
+| tests/ | Automated API, validation, artifact-loading and preprocessing checks |
+| requirements-test.txt | Test dependencies for Python 3.11 |
+| .github/workflows/titanic.yml | API tests, EDA reproducibility and Docker health checks |
 
 The serving Dockerfile installs requirements.txt. The lock file records the tested environment; it is not currently used by the Dockerfile.
 
@@ -40,6 +46,18 @@ The serving Dockerfile installs requirements.txt. The lock file records the test
 - test.csv contains unlabeled competition records.
 - gender_submission.csv is an example submission, not ground-truth labels.
 - Original downloaded files were preserved.
+
+## Explore the data
+
+Read the [EDA report](docs/eda.md) for missing-value counts, numeric and categorical distributions, and survival rates by sex and passenger class. It uses the 891 labeled records for descriptive analysis. The report does not change preprocessing or retrain the saved model.
+
+Regenerate the report and its CSV summaries from the project root with Python (standard library only):
+
+```powershell
+python .\training\explore_data.py
+```
+
+The report separates observed associations from causal conclusions and explains why these full-dataset summaries must not be used to tune the already evaluated model.
 
 ## Train the model
 
@@ -85,6 +103,32 @@ Keep the terminal running while using the API. Press Ctrl+C to stop it.
 - Swagger documentation: http://127.0.0.1:8000/docs
 - Health check: http://127.0.0.1:8000/health
 
+The serving image now includes a Docker `HEALTHCHECK`. Every 30 seconds it requests `/health` with a two-second HTTP timeout and requires both `status: healthy` and `model_loaded: true`. Docker allows a 20-second startup period and marks the container unhealthy after three consecutive failures. The probe uses Python's standard library; no curl installation is needed.
+
+From another terminal, inspect the status:
+
+```powershell
+docker inspect --format '{{.State.Health.Status}}' titanic-api
+```
+
+An unhealthy status reports a problem; Docker does not automatically restart a container solely because a health check fails.
+
+## Automated tests
+
+Use Python 3.11 to match the model's scikit-learn 1.3.0 environment. From the project root:
+
+```powershell
+py -3.11 -m venv .venv-test
+.\.venv-test\Scripts\python.exe -m pip install -r requirements-test.txt
+.\.venv-test\Scripts\python.exe -m pytest tests -q
+```
+
+The suite loads the saved model without retraining it and checks single and batch predictions, batch size limits and input order, single/batch consistency, request validation, nullable fields, artifact-loading safeguards, and training/serving preprocessing parity. Test dependencies include a compatible HTTPX version for this FastAPI/Starlette release.
+
+GitHub Actions also rebuilds the serving image and verifies a valid prediction as the non-root user. It then suspends the disposable test container's server, checks that Docker reports `unhealthy`, resumes the server and checks recovery to `healthy`. The EDA report is regenerated and compared with the checked-in report.
+
+These checks are separate from the original manual validation record below.
+
 ## Endpoints
 
 | Method | Endpoint | Purpose |
@@ -93,7 +137,7 @@ Keep the terminal running while using the API. Press Ctrl+C to stop it.
 | GET | /health | Model-loading status and validation accuracy |
 | GET | /model-info | Model metadata and preprocessing settings |
 | POST | /predict | Predict one passenger |
-| POST | /predict-batch | Predict 1–100 passengers |
+| POST | /predict-batch | Predict 1-100 passengers |
 
 ## Example prediction request
 
@@ -146,6 +190,8 @@ Docker Hub: https://hub.docker.com/r/rithmsai/titanic-api
 
 Available tags: `1.0` and `latest`  
 Image platform: `linux/amd64`
+
+The `1.0` tag is the original submitted image. The source-code improvements described above require a new image build; they are not retroactively added to that tag.
 
 ```powershell
 docker pull rithmsai/titanic-api:1.0
