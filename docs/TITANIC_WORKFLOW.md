@@ -87,7 +87,7 @@ The path checks allow OneDrive cloud placeholders while rejecting symbolic links
 }
 ```
 
-Verify that the submodule status begins with a space, not `-`, `+` or `U`; its origin is `https://github.com/rithmsAI/titanic-ml-project.git`; and the portfolio is clean. The original files and any ignored leftovers remain in the printed backup folder. This one-time migration block has been reviewed but was not executed against Kaya's local checkout by the assistant.
+Verify that the submodule status begins with a space, not `-`, `+` or `U`; its origin is `https://github.com/rithmsAI/titanic-ml-project.git`; and the portfolio is clean. The original files and any ignored leftovers remain in the printed backup folder. The migration was verified in the existing OneDrive checkout on November 22, 2026. Git left empty project directories behind after the fast-forward. Moving those directories individually into the backup allowed the submodule to initialize.
 
 ## Future work
 
@@ -110,4 +110,6 @@ To reproduce the portfolio's recorded version with clean working trees, run `git
 
 ## Docker Hub
 
-The published `rithmsai/titanic-api:1.0` image is still the original submission. The new Docker HEALTHCHECK is verified in CI and available when building from the updated source. Updating GitHub does not rebuild or republish Docker Hub tags automatically.
+The serving image with Docker HEALTHCHECK is published as `rithmsai/titanic-api:1.1` and `latest` for `linux/amd64`. Both tags point to `sha256:ce1a5bb111e6129e21a70b8dee44a23a265e56d10791bb9b6f18e68f5eeacb6e`. The original submission is available as `1.0`.
+
+See the [canonical Titanic README](https://github.com/rithmsAI/titanic-ml-project#run-the-published-image) for Docker commands and verification results.
